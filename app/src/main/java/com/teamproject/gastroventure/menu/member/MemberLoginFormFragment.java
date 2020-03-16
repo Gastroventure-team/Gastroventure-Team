@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.teamproject.gastroventure.R;
 
 /**
+ *
  * A simple {@link Fragment} subclass.
  * Use the {@link MemberLoginFormFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -78,13 +79,13 @@ public class MemberLoginFormFragment extends Fragment {
         //아이디,비밀번호 찾기
         tv_find_id_pwd = (TextView)view.findViewById(R.id.tv_find_id_pwd);
         //아이디,비밀번호 입력
-        et_id =(EditText)view.findViewById(R.id.et_id);
-        et_pwd =(EditText)view.findViewById(R.id.et_pwd);
+        et_id =view.findViewById(R.id.et_id);
+        et_pwd =view.findViewById(R.id.et_pwd);
         //자동로그인, 아이디저장
-        cb_save_id = (CheckBox)view.findViewById(R.id.cb_save_id);
-        cb_auto_login = (CheckBox)view.findViewById(R.id.cb_auto_login);
+        cb_save_id = view.findViewById(R.id.cb_save_id);
+        cb_auto_login = view.findViewById(R.id.cb_auto_login);
         //로그인, 회원가입 버튼
-        btn_login = (Button)view.findViewById(R.id.btn_login);
+        btn_login = view.findViewById(R.id.btn_login);
 
         return view;
     }
