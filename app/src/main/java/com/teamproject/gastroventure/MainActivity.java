@@ -12,7 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.teamproject.gastroventure.menu.BoardFragment;
 import com.teamproject.gastroventure.menu.ReviewFragment;
 import com.teamproject.gastroventure.menu.SearchFragment;
-import com.teamproject.gastroventure.menu.LoginUserInfoFragment;
+import com.teamproject.gastroventure.menu.member.LoginUserInfoFragment;
 
 public class MainActivity extends AppCompatActivity {
 
