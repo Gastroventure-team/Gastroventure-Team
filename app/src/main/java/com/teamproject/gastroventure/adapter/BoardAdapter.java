@@ -19,12 +19,12 @@ import java.util.ArrayList;
  */
 public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHolder> {
 
-    private ArrayList<BoardVo> arrayList;
+    private ArrayList<BoardVo> boardList;
     private Context context;
 
 
     public BoardAdapter(ArrayList<BoardVo> arrayList, Context context) {
-        this.arrayList = arrayList;
+        this.boardList = arrayList;
         this.context = context;
     }
 
@@ -33,21 +33,21 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
     @Override
     public BoardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.board_item,parent,false);
-        BoardViewHolder holder = new BoardViewHolder(view);
-        return holder;
+        BoardViewHolder boardViewHolder = new BoardViewHolder(view);
+        return boardViewHolder;
     }
 
     @Override
     //각 아이템들에 대한 매칭을 시켜준다
     public void onBindViewHolder(@NonNull BoardViewHolder holder, int position) {
-        holder.board_num.setText(arrayList.get(position).getBoard_num());
-        holder.board_title.setText(arrayList.get(position).getBoard_title());
-        holder.board_date.setText(arrayList.get(position).getBoard_date());
+        holder.board_num.setText(boardList.get(position).getBoard_num());
+        holder.board_title.setText(boardList.get(position).getBoard_title());
+        holder.board_date.setText(boardList.get(position).getBoard_date());
     }
 
     @Override
     public int getItemCount() {
-        return (arrayList != null? arrayList.size() : 0);
+        return (boardList != null? boardList.size() : 0);
 
     }
 
