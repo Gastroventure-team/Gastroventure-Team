@@ -1,4 +1,4 @@
-package com.teamproject.gastroventure.menu;
+package com.teamproject.gastroventure.menu.member;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
