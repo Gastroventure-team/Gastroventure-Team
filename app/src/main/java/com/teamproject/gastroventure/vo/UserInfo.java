@@ -1,5 +1,10 @@
 package com.teamproject.gastroventure.vo;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by hanman-yong on 2020/03/16.
  */
@@ -33,6 +38,18 @@ public class UserInfo {
         this.id = id;
         this.name = name;
         this.nickname = nickname;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("pw", pw);
+        result.put("name", name);
+        result.put("nickname", nickname);
+        result.put("phone", phone);
+
+        return result;
     }
 
     public String getId() {
