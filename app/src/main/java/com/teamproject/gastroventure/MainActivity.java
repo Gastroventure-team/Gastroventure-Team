@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.teamproject.gastroventure.menu.BoardFragment;
-import com.teamproject.gastroventure.menu.ReviewFragment;
+import com.teamproject.gastroventure.menu.review.ReviewFragment;
 import com.teamproject.gastroventure.menu.SearchFragment;
 import com.teamproject.gastroventure.menu.member.LoginUserInfoFragment;
 
