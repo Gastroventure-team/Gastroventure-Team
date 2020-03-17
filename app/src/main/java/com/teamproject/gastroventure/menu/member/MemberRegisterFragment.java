@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 
 /**
@@ -18,6 +19,7 @@ import com.teamproject.gastroventure.R;
  * create an instance of this fragment.
  */
 public class MemberRegisterFragment extends Fragment {
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -32,6 +34,11 @@ public class MemberRegisterFragment extends Fragment {
     //fragment_member_register 항목 변수 선언
     EditText et_id,et_pwd,et_pwd_check,et_name,et_tel,et_nickname;
     Button btn_submit,btn_cancel;
+
+    MainActivity main;
+
+    LogoutUserInfoFragment logoutFrag;
+    MemberLoginFormFragment loginFrag;
 
     public MemberRegisterFragment() {
         // Required empty public constructor
@@ -70,6 +77,11 @@ public class MemberRegisterFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_member_register, container, false);
 
+        loginFrag = new MemberLoginFormFragment();
+        logoutFrag = new LogoutUserInfoFragment();
+
+        main = (MainActivity)getActivity();
+
         et_id = (EditText)view.findViewById(R.id.et_id);
         et_pwd =(EditText)view.findViewById(R.id.et_pwd);
         et_pwd_check=(EditText)view.findViewById(R.id.et_pwd_check);
@@ -80,6 +92,19 @@ public class MemberRegisterFragment extends Fragment {
         btn_submit =(Button)view.findViewById(R.id.btn_submit);
         btn_cancel =(Button)view.findViewById(R.id.btn_cancel);
 
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.replaceFragment(loginFrag);
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.replaceFragment(logoutFrag);
+            }
+        });
 
         return view;
     }

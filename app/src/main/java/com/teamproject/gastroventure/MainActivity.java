@@ -2,6 +2,7 @@ package com.teamproject.gastroventure;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.teamproject.gastroventure.menu.BoardFragment;
+import com.teamproject.gastroventure.menu.member.LogoutUserInfoFragment;
 import com.teamproject.gastroventure.menu.review.ReviewFragment;
 import com.teamproject.gastroventure.menu.SearchFragment;
 import com.teamproject.gastroventure.menu.member.LoginUserInfoFragment;
@@ -27,13 +29,14 @@ public class MainActivity extends AppCompatActivity {
     private ReviewFragment reviewFragment;
     private SearchFragment searchFragment;
     private BoardFragment boardFragment;
-    private LoginUserInfoFragment loginUserInfoFragment;
+    private LogoutUserInfoFragment logoutUserInfoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //하단 네비게이션 바
         bottomNavigationView = findViewById(R.id.bottomNavi);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -59,9 +62,16 @@ public class MainActivity extends AppCompatActivity {
         reviewFragment = new ReviewFragment();
         searchFragment = new SearchFragment();
         boardFragment = new BoardFragment();
-        loginUserInfoFragment = new LoginUserInfoFragment();
+        logoutUserInfoFragment = new LogoutUserInfoFragment();
         setFrag(0); // 첫 프래그먼트 화면을 무엇으로 지정해줄 것인지 선택.
 
+    }
+
+    //프래그먼트간 이동을 위해 사용하는 메소드
+    public void replaceFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.main_frame, fragment).commit();
     }
 
     // 프래그먼트 교체가 일어나는 실행문이다.
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
             case 3:
-                ft.replace(R.id.main_frame, loginUserInfoFragment);
+                ft.replace(R.id.main_frame, logoutUserInfoFragment);
                 ft.commit();
                 break;
         }

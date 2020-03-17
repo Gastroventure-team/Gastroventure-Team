@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 
 /**
@@ -21,6 +22,11 @@ import com.teamproject.gastroventure.R;
  * create an instance of this fragment.
  */
 public class MemberLoginFormFragment extends Fragment {
+
+    public static MemberLoginFormFragment newInstance(){
+        return new MemberLoginFormFragment();
+    }
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -37,7 +43,10 @@ public class MemberLoginFormFragment extends Fragment {
     CheckBox cb_save_id, cb_auto_login;
     Button btn_login;
 
+    MainActivity main;
 
+    LoginUserInfoFragment login_userFrag;
+    MemberFindIdPwd find_id_pwd_Frag;
 
     public MemberLoginFormFragment() {
         // Required empty public constructor
@@ -75,6 +84,11 @@ public class MemberLoginFormFragment extends Fragment {
                              Bundle savedInstanceState) {
         view =inflater.inflate(R.layout.fragment_member_login_form, container, false);
 
+        login_userFrag = new LoginUserInfoFragment();
+        find_id_pwd_Frag = new MemberFindIdPwd();
+
+        main = (MainActivity)getActivity();
+
         // Inflate the layout for this fragment
         //아이디,비밀번호 찾기
         tv_find_id_pwd = (TextView)view.findViewById(R.id.tv_find_id_pwd);
@@ -86,6 +100,20 @@ public class MemberLoginFormFragment extends Fragment {
         cb_auto_login = view.findViewById(R.id.cb_auto_login);
         //로그인, 회원가입 버튼
         btn_login = view.findViewById(R.id.btn_login);
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.replaceFragment(login_userFrag);
+            }
+        });
+
+        tv_find_id_pwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.replaceFragment(find_id_pwd_Frag);
+            }
+        });
 
         return view;
     }
