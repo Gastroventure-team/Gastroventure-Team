@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".menu.review.ReviewInsertFragment">
-
+ 
     <EditText
         android:id="@+id/review_insert_name"
         android:layout_width="match_parent"
