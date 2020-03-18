@@ -39,6 +39,9 @@ public class LoginUserInfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.frag_login_user_info, container, false);
 
+        main = (MainActivity)getActivity();
+        modifyFrag = new MemberModifyFormFragment();
+
         //등급별 이미지뷰
         civ_rank = view.findViewById(R.id.civ_rank);
         //닉네임, 등급, 작성게시물수 텍스트뷰
@@ -48,10 +51,6 @@ public class LoginUserInfoFragment extends Fragment {
         // 정보수정, 회원탈퇴 버튼
         btn_user_info = view.findViewById(R.id.btn_user_info);
         btn_dodge = view.findViewById(R.id.btn_dodge);
-
-        main = (MainActivity)getActivity();
-
-        modifyFrag = new MemberModifyFormFragment();
 
         btn_user_info.setOnClickListener(new View.OnClickListener() {
             @Override

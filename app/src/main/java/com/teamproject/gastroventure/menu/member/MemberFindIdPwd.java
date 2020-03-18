@@ -32,6 +32,8 @@ public class MemberFindIdPwd extends Fragment {
     EditText et_find_id_name, et_find_id_tel, et_find_pwd_name, et_find_pwd_id, et_find_pwd_tel;
     Button btn_find_id, btn_find_pwd;
 
+    String find_id_name, find_id_tel, find_pwd_name, find_pwd_id, find_pwd_tel;
+
     public MemberFindIdPwd() {
         // Required empty public constructor
     }
@@ -73,11 +75,36 @@ public class MemberFindIdPwd extends Fragment {
         et_find_id_name = view.findViewById(R.id.et_find_id_name);
         et_find_id_tel =view.findViewById(R.id.et_find_id_tel);
         btn_find_id = view.findViewById(R.id.btn_find_id);
+
         //비밀번호찾기
         et_find_pwd_name = view.findViewById(R.id.et_find_pwd_name);
         et_find_pwd_id =view.findViewById(R.id.et_find_pwd_id);
         et_find_pwd_tel = view.findViewById(R.id.et_find_pwd_tel);
         btn_find_pwd = view.findViewById(R.id.btn_find_pwd);
+
+        //아이디 찾기 입력값
+        find_id_name = et_find_id_name.getText().toString().trim();
+        find_id_tel = et_find_id_tel.getText().toString().trim();
+        //비밀번호 찾기 입력값
+        find_pwd_name = et_find_pwd_name.getText().toString().trim();
+        find_pwd_id = et_find_pwd_id.getText().toString().trim();
+        find_pwd_tel = et_find_pwd_tel.getText().toString().trim();
+
+        btn_find_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //DB에서 이름과 전화번호 검색 후 일치하는 아이디 다이얼로그로 띄워주기
+
+            }
+        });
+
+        btn_find_pwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //DB에서 아이디, 이름, 전화번호 검색 후 일치하는 계정 비밀번호 재설정 진행
+            }
+        });
+
 
         return view;
     }

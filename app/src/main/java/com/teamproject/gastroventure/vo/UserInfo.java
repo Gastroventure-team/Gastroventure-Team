@@ -9,22 +9,24 @@ import java.util.Map;
  * Created by hanman-yong on 2020/03/16.
  */
 public class UserInfo {
+    public int idx;
     public String id;
     public String pw;
     public String name;
     public String nickname;
-    public String phone;
+    public String tel;
 
     public UserInfo() {
     }
 
     // 회원가입시
-    public UserInfo(String id, String pw, String name, String nickname, String phone) {
+    public UserInfo(int idx,String id, String pw, String name, String nickname, String tel) {
+        this.idx = idx;
         this.id = id;
         this.pw = pw;
         this.name = name;
         this.nickname = nickname;
-        this.phone = phone;
+        this.tel = tel;
     }
 
     // 아이디 찾기
@@ -47,9 +49,17 @@ public class UserInfo {
         result.put("pw", pw);
         result.put("name", name);
         result.put("nickname", nickname);
-        result.put("phone", phone);
+        result.put("phone", tel);
 
         return result;
+    }
+
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
     public String getId() {
@@ -84,11 +94,11 @@ public class UserInfo {
         this.nickname = nickname;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getTel() {
+        return tel;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setTel(String tel) {
+        this.tel = tel;
     }
 }

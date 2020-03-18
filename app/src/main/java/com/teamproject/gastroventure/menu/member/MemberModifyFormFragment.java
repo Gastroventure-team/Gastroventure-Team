@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +36,8 @@ public class MemberModifyFormFragment extends Fragment {
     MainActivity main;
 
     LoginUserInfoFragment login_user_info_Frag;
+
+    String pwd,pwd_check,name,nickname,tel;
 
     public MemberModifyFormFragment() {
         // Required empty public constructor
@@ -86,9 +89,21 @@ public class MemberModifyFormFragment extends Fragment {
         btn_modify = view.findViewById(R.id.btn_modify);
         btn_cancel = view.findViewById(R.id.btn_modify);
 
+        pwd = et_pwd.getText().toString().trim();
+        pwd_check  = et_pwd_check.getText().toString().trim();
+        name = et_name.getText().toString().trim();
+        nickname = et_nickname.getText().toString().trim();
+        tel = et_tel.getText().toString().trim();
+
         btn_modify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!pwd_check.equals(pwd)){
+                    DialogSampleUtil.showMessageDialog(getContext(),"","비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+                }
+
+                //DB에 정보 업데이트
+
                 main.replaceFragment(login_user_info_Frag);
             }
         });

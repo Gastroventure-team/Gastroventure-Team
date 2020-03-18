@@ -48,6 +48,8 @@ public class MemberLoginFormFragment extends Fragment {
     LoginUserInfoFragment login_userFrag;
     MemberFindIdPwd find_id_pwd_Frag;
 
+    String id,pwd;
+
     public MemberLoginFormFragment() {
         // Required empty public constructor
     }
@@ -101,9 +103,22 @@ public class MemberLoginFormFragment extends Fragment {
         //로그인, 회원가입 버튼
         btn_login = view.findViewById(R.id.btn_login);
 
+        //로그인 정보값 읽어오기
+        id = et_id.getText().toString().trim();
+        pwd = et_pwd.getText().toString().trim();
+
+        //아이디 저장 체크박스가 체크되어있다면 et_id에 입력된 id 저장
+        if(cb_save_id.isChecked()){
+            et_id.setText(id);
+        }
+
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //DB에서 id, pwd 일치하는 경우 로그인 페이지로 이동, 일치하지 않을 경우 다이얼로그 이용해서 알려주기
+
+
+
                 main.replaceFragment(login_userFrag);
             }
         });

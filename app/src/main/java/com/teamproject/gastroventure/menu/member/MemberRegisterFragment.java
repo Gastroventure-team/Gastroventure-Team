@@ -12,6 +12,8 @@ import android.widget.EditText;
 
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.vo.UserInfo;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +41,13 @@ public class MemberRegisterFragment extends Fragment {
 
     LogoutUserInfoFragment logoutFrag;
     MemberLoginFormFragment loginFrag;
+
+    String id;
+    String pwd;
+    String pwd_check;
+    String name;
+    String nickname;
+    String tel;
 
     public MemberRegisterFragment() {
         // Required empty public constructor
@@ -79,7 +88,6 @@ public class MemberRegisterFragment extends Fragment {
 
         loginFrag = new MemberLoginFormFragment();
         logoutFrag = new LogoutUserInfoFragment();
-
         main = (MainActivity)getActivity();
 
         et_id = (EditText)view.findViewById(R.id.et_id);
@@ -92,13 +100,32 @@ public class MemberRegisterFragment extends Fragment {
         btn_submit =(Button)view.findViewById(R.id.btn_submit);
         btn_cancel =(Button)view.findViewById(R.id.btn_cancel);
 
+        //입력된 항목 값 읽어오기
+        id = et_id.getText().toString().trim();
+        pwd = et_pwd.getText().toString().trim();
+        pwd_check = et_pwd_check.getText().toString().trim();
+        name = et_name.getText().toString().trim();
+        nickname = et_name.getText().toString().trim();
+        tel = et_tel.getText().toString().trim();
+
+        //프래그먼트 이동
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //비밀번호 확인
+                if(!pwd_check.equals(pwd)){
+                    //비밀번호 확인했을 때 같지않을 경우
+                    DialogSampleUtil.showMessageDialog(getContext(),"","비밀번호가 일치하지 않습니다. 다시 확인해주세요");
+                    et_pwd_check.setText("");
+                    et_pwd_check.requestFocus();
+
+                    return;
+                }
+                //DB로 인서트
+
                 main.replaceFragment(loginFrag);
             }
         });
-
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
