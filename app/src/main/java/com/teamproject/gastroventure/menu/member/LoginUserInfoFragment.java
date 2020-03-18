@@ -15,15 +15,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 
 public class LoginUserInfoFragment extends Fragment {
+
+    public static LoginUserInfoFragment newInstance(){
+        return new LoginUserInfoFragment();
+    }
 
     private View view;
 
     ImageView civ_rank;
     TextView tv_show_nickname, tv_grade, tv_writen_review;
     Button btn_user_info, btn_dodge;
+
+    MainActivity main;
+
+    MemberModifyFormFragment modifyFrag;
 
     @Nullable
     @Override
@@ -39,6 +48,24 @@ public class LoginUserInfoFragment extends Fragment {
         // 정보수정, 회원탈퇴 버튼
         btn_user_info = view.findViewById(R.id.btn_user_info);
         btn_dodge = view.findViewById(R.id.btn_dodge);
+
+        main = (MainActivity)getActivity();
+
+        modifyFrag = new MemberModifyFormFragment();
+
+        btn_user_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.replaceFragment(modifyFrag);
+            }
+        });
+
+        btn_dodge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //다이얼로그 이용해서 정말 삭제할건지 확인 후 삭제, 취소 선택
+            }
+        });
 
         return view;
     }
