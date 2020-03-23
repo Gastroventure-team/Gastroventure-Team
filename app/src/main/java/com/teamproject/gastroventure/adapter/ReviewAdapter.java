@@ -46,7 +46,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
                 .into(holder.review_img);
         holder.review_store_name.setText(reviewList.get(position).getStore_name());
         holder.review_menu.setText(reviewList.get(position).getMenu());
-        holder.review_rating.setRating(reviewList.get(position).getRating_num());
+        holder.review_rating.setRating((float) reviewList.get(position).getRating_num());
     }
 
     @Override

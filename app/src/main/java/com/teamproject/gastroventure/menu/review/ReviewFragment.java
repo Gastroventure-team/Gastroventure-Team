@@ -1,6 +1,6 @@
 package com.teamproject.gastroventure.menu.review;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewAdapter;
 import com.teamproject.gastroventure.vo.ReviewVo;
@@ -36,11 +37,14 @@ public class ReviewFragment extends Fragment {
     private ArrayList<ReviewVo> reviewList;
     private FirebaseDatabase reviewDatabase;
     private DatabaseReference databaseReference;
+    private MainActivity main;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.frag_review, container, false);
+
+        main = (MainActivity)getActivity();
 
         review_rcv_list = view.findViewById(R.id.review_rcv_list); // 아디 연결
         review_rcv_list.setHasFixedSize(true); // 리사이클러뷰 기존성능 강화
@@ -55,16 +59,22 @@ public class ReviewFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                main.replaceFragment(new ReviewInsertFragment());
             }
         });
 
-        dateRead();
+        dataRead();
 
         return view;
     }
 
-    public void dateRead(){
+    @Override
+    public void onResume() {
+        super.onResume();
+        dataRead();
+    }
+
+    public void dataRead(){
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

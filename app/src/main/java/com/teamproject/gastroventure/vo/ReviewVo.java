@@ -7,8 +7,9 @@ public class ReviewVo {
     public int idx; // 필요하려나.
     public String store_name;
     public String menu;
-    public int rating_num;
+    public double rating_num;
     public String menu_image;
+    public String review_content;
 
     public ReviewVo() {
     }
@@ -29,11 +30,11 @@ public class ReviewVo {
         this.menu = menu;
     }
 
-    public int getRating_num() {
+    public double getRating_num() {
         return rating_num;
     }
 
-    public void setRating_num(int rating_num) {
+    public void setRating_num(double rating_num) {
         this.rating_num = rating_num;
     }
 
@@ -43,5 +44,13 @@ public class ReviewVo {
 
     public void setMenu_image(String menu_image) {
         this.menu_image = menu_image;
+    }
+
+    public String getReview_content() {
+        return review_content;
+    }
+
+    public void setReview_content(String review_content) {
+        this.review_content = review_content;
     }
 }

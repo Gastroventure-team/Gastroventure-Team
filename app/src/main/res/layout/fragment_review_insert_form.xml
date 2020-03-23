@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_weight="0.5"
+        android:layout_weight="0.7"
         android:layout_marginBottom="10dp"
         android:numStars="5"
         android:stepSize="0.5" />
@@ -58,7 +58,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/act_insert_image_insert"
+            android:id="@+id/review_insert_image"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/act_insert_content_text"
@@ -74,6 +74,14 @@
             android:layout_weight="1"
             android:background="@drawable/border"
             android:text="리뷰 입력" />
+
+        <Button
+            android:id="@+id/review_cancel_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/border"
+            android:text="뒤로 가기" />
 
     </LinearLayout>
 
