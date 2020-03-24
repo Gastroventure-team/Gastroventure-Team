@@ -75,7 +75,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/border"
-                android:text="리뷰 입력" />
+                android:text="수정 하기" />
 
             <Button
                 android:id="@+id/review_modify_cancel_btn"

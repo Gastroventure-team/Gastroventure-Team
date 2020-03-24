@@ -101,7 +101,7 @@ public class ReviewModifyFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_member_modify_form, container, false);
+        view = inflater.inflate(R.layout.fragment_review_modify_form, container, false);
 
         main = (MainActivity) getActivity();
         Log.d(SELECT_KEY, "key = " + select_key);
@@ -196,7 +196,7 @@ public class ReviewModifyFragment extends Fragment {
                 ReviewVo reviewVo = dataSnapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
                 reviewVo.setReview_key(dataSnapshot.getKey());
 
-                et_modify_store_name.setText(reviewVo.getStore_name() + " - ");
+                et_modify_store_name.setText(reviewVo.getStore_name());
                 et_modify_menu.setText(reviewVo.getMenu());
                 et_modify_review_content.setText(reviewVo.getReview_content());
 

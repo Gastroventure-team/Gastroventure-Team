@@ -117,7 +117,7 @@ public class ReviewDetailFragment extends Fragment {
                     ReviewVo reviewVo = dataSnapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
                     reviewVo.setReview_key(dataSnapshot.getKey());
 
-                    detail_store_name.setText(reviewVo.getStore_name() + " - ");
+                    detail_store_name.setText(reviewVo.getStore_name());
                     detail_menu.setText(reviewVo.getMenu());
                     detail_content.setText(reviewVo.getReview_content());
 
