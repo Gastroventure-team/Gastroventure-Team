@@ -27,8 +27,8 @@ public class DialogSampleUtil {
                         dialog.cancel();
                     }
                 });
-        AlertDialog dalog=builder.create();
-        dalog.show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public static void showMessageDialog(Context context, String title, String message){

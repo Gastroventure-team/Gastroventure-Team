@@ -2,6 +2,8 @@ package com.teamproject.gastroventure.menu.review;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +24,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewAdapter;
+import com.teamproject.gastroventure.datainterface.ReviewInterface;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.util.ArrayList;
 
-public class ReviewFragment extends Fragment {
+public class ReviewFragment extends Fragment implements ReviewInterface {
     private final String TAG = "ReviewFrag Log";
+    private final String CHILE_NAME = "Review";
 
     private View view;
     private FloatingActionButton insert_fbtn;
     private RecyclerView review_rcv_list;
     private RecyclerView.Adapter reviewAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<ReviewVo> reviewList;
+    private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();;
     private FirebaseDatabase reviewDatabase;
     private DatabaseReference databaseReference;
     private MainActivity main;
@@ -50,13 +55,12 @@ public class ReviewFragment extends Fragment {
         review_rcv_list.setHasFixedSize(true); // 리사이클러뷰 기존성능 강화
         layoutManager = new LinearLayoutManager(getContext());
         review_rcv_list.setLayoutManager(layoutManager);
-        reviewList = new ArrayList<ReviewVo>(); // User 객체를 담을 어레이 리스트 (어댑터쪽으로)
 
         reviewDatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
-        databaseReference = reviewDatabase.getReference("Review"); // DB 테이블 연결
+        databaseReference = reviewDatabase.getReference(); // DB 테이블 연결
 
-        FloatingActionButton fab = view.findViewById(R.id.review_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        insert_fbtn = view.findViewById(R.id.review_fab);
+        insert_fbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 main.replaceFragment(new ReviewInsertFragment());
@@ -68,23 +72,20 @@ public class ReviewFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        dataRead();
-    }
-
     public void dataRead(){
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(CHILE_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // 파이어베이스 데이터베이스의 데이터를 받아오는 곳
                 reviewList.clear(); // 기존 배열리스트가 존재하지않게 초기화
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) { // 반복문으로 데이터 List를 추출해냄
+                    snapshot.getKey();
                     ReviewVo reviewVo = snapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                    reviewVo.setReview_key(snapshot.getKey());
                     reviewList.add(reviewVo); // 담은 데이터들을 배열리스트에 넣고 리사이클러뷰로 보낼 준비
 
                     Log.d(TAG, " 메뉴이름! " + reviewVo.getMenu());
+                    Log.d(TAG, " 리뷰 키! " + reviewVo.getReview_key());
                 }
                 Log.d(TAG, "리스트 사이즈 : " + reviewList.size());
                 reviewAdapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
@@ -97,7 +98,31 @@ public class ReviewFragment extends Fragment {
             }
         });
 
-        reviewAdapter = new ReviewAdapter(reviewList, getContext());
+        reviewAdapter = new ReviewAdapter(reviewList, getContext(), this);
         review_rcv_list.setAdapter(reviewAdapter); // 리사이클러뷰에 어댑터 연결
+    }
+
+    @Override
+    public void dataRemove(final String key) {
+        //final String review_key = key;
+        Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 1) {//Yes
+                    try {
+                        Log.d("키 맞다고!!!!", key);
+                        databaseReference.child(CHILE_NAME).child(key).removeValue();
+
+                        dataRead();
+                        //reviewAdapter.notifyDataSetChanged();
+                    } catch (Exception e){
+                        Log.d(TAG, e.getMessage());
+                    }
+                }
+            }
+        };
+
+        DialogSampleUtil.showConfirmDialog(getContext(), "", "선택한 리뷰를 삭제 하시겠습니까?", handler);
+
     }
 }

@@ -3,7 +3,7 @@ package com.teamproject.gastroventure.vo;
 /**
  * Created by hanman-yong on 2020/03/17.
  */
-public class ReviewVo {
+public class ReviewInsertImgVo {
     public String review_key;
     public String store_name;
     public String menu;
@@ -11,7 +11,7 @@ public class ReviewVo {
     public String menu_image;
     public String review_content;
 
-    public ReviewVo() {
+    public ReviewInsertImgVo() {
     }
 
     public String getReview_key() {

@@ -1,6 +1,7 @@
 package com.teamproject.gastroventure.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.datainterface.ReviewInterface;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.util.ArrayList;
@@ -24,10 +26,13 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
 
     private ArrayList<ReviewVo> reviewList;
     private Context context;
+   // private ReviewFragment reviewFragment;
+    private ReviewInterface reviewInterface;
 
-    public ReviewAdapter(ArrayList<ReviewVo> arrayList, Context context) {
+    public ReviewAdapter(ArrayList<ReviewVo> arrayList, Context context, ReviewInterface reviewInterface) {
         this.reviewList = arrayList;
         this.context = context;
+        this.reviewInterface = reviewInterface;
     }
 
     @NonNull
@@ -35,12 +40,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
     public BoardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.review_item, parent, false);
         BoardViewHolder boardViewHolder = new BoardViewHolder(view);
+
+        //reviewFragment = new ReviewFragment();
+
         return boardViewHolder;
     }
 
     @Override
     //각 아이템들에 대한 매칭을 시켜준다
     public void onBindViewHolder(@NonNull BoardViewHolder holder, int position) {
+        //holder.reviewVo = (ReviewVo) reviewList.get(position);
+
         Glide.with(holder.itemView)
                 .load(reviewList.get(position).getMenu_image())
                 .into(holder.review_img);
@@ -67,6 +77,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
             this.review_store_name = itemView.findViewById(R.id.tv_review_store_name);
             this.review_menu = itemView.findViewById(R.id.tv_review_menu);
             this.review_rating = itemView.findViewById(R.id.review_list_rating);
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    String key = reviewList.get(getAdapterPosition()).getReview_key();
+                    Log.d("리뷰키!!!!", key);
+
+                    reviewInterface.dataRemove(key);
+
+                    //reviewFragment.dataRemove(context, key);
+                    return false;
+                }
+            });
         }
     }
 }
