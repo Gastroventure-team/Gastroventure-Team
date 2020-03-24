@@ -5,13 +5,15 @@ package com.teamproject.gastroventure.vo;
  */
 public class ReviewInsertImgVo {
     public String review_key;
-    public String store_name;
-    public String menu;
-    public double rating_num;
+    public String review_insert_key;
     public String menu_image;
-    public String review_content;
 
     public ReviewInsertImgVo() {
+    }
+
+    public ReviewInsertImgVo(String review_key, String menu_image) {
+        this.review_key = review_key;
+        this.menu_image = menu_image;
     }
 
     public String getReview_key() {
@@ -22,28 +24,12 @@ public class ReviewInsertImgVo {
         this.review_key = review_key;
     }
 
-    public String getStore_name() {
-        return store_name;
+    public String getReview_insert_key() {
+        return review_insert_key;
     }
 
-    public void setStore_name(String store_name) {
-        this.store_name = store_name;
-    }
-
-    public String getMenu() {
-        return menu;
-    }
-
-    public void setMenu(String menu) {
-        this.menu = menu;
-    }
-
-    public double getRating_num() {
-        return rating_num;
-    }
-
-    public void setRating_num(double rating_num) {
-        this.rating_num = rating_num;
+    public void setReview_insert_key(String review_insert_key) {
+        this.review_insert_key = review_insert_key;
     }
 
     public String getMenu_image() {
@@ -52,13 +38,5 @@ public class ReviewInsertImgVo {
 
     public void setMenu_image(String menu_image) {
         this.menu_image = menu_image;
-    }
-
-    public String getReview_content() {
-        return review_content;
-    }
-
-    public void setReview_content(String review_content) {
-        this.review_content = review_content;
     }
 }

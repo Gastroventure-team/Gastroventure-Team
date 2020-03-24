@@ -6,15 +6,24 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.Manifest;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+import com.teamproject.gastroventure.event.ActivityResultEvent;
 import com.teamproject.gastroventure.menu.BoardFragment;
 import com.teamproject.gastroventure.menu.member.LogoutUserInfoFragment;
 import com.teamproject.gastroventure.menu.review.ReviewFragment;
 import com.teamproject.gastroventure.menu.SearchFragment;
 import com.teamproject.gastroventure.menu.member.LoginUserInfoFragment;
+import com.teamproject.gastroventure.util.BusProvider;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tedPermission();
 
         //하단 네비게이션 바
         bottomNavigationView = findViewById(R.id.bottomNavi);
@@ -96,5 +107,38 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
         }
+    }
+
+    // 퍼미션 물어보기. (카메라, 저장소 접근)
+    private void tedPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return;
+        }
+
+        PermissionListener permissionListener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                // 권한 요청 성공
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                // 권한 요청 실패
+            }
+        };
+
+        TedPermission.with(this)
+                .setPermissionListener(permissionListener)
+                .setRationaleMessage(getResources().getString(R.string.permission_2))
+                .setDeniedMessage(getResources().getString(R.string.permission_1))
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                .check();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        BusProvider.getInstance().post(new ActivityResultEvent(requestCode, resultCode, data));
     }
 }

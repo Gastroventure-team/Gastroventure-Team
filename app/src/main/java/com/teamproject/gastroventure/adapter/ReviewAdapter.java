@@ -78,6 +78,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
             this.review_menu = itemView.findViewById(R.id.tv_review_menu);
             this.review_rating = itemView.findViewById(R.id.review_list_rating);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String key = reviewList.get(getAdapterPosition()).getReview_key();
+
+                    reviewInterface.dataDetail(key);
+                }
+            });
+
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {

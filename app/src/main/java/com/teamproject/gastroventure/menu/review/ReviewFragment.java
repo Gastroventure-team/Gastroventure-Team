@@ -1,5 +1,6 @@
 package com.teamproject.gastroventure.menu.review;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,10 +9,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,10 +43,13 @@ public class ReviewFragment extends Fragment implements ReviewInterface {
     private RecyclerView review_rcv_list;
     private RecyclerView.Adapter reviewAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();;
+    private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();
+
     private FirebaseDatabase reviewDatabase;
     private DatabaseReference databaseReference;
+
     private MainActivity main;
+    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -70,6 +77,12 @@ public class ReviewFragment extends Fragment implements ReviewInterface {
         dataRead();
 
         return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        showProgress("로딩중...");
     }
 
     public void dataRead(){
@@ -100,6 +113,8 @@ public class ReviewFragment extends Fragment implements ReviewInterface {
 
         reviewAdapter = new ReviewAdapter(reviewList, getContext(), this);
         review_rcv_list.setAdapter(reviewAdapter); // 리사이클러뷰에 어댑터 연결
+
+        hideProgress();
     }
 
     @Override
@@ -124,5 +139,30 @@ public class ReviewFragment extends Fragment implements ReviewInterface {
 
         DialogSampleUtil.showConfirmDialog(getContext(), "", "선택한 리뷰를 삭제 하시겠습니까?", handler);
 
+    }
+
+    @Override
+    public void dataDetail(String key) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.main_frame, ReviewDetailFragment.newInstance(key)).commit();
+    }
+
+    public void showProgress(String message) {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(message);
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        progressDialog.show();
+    }
+
+    public void hideProgress() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
     }
 }
