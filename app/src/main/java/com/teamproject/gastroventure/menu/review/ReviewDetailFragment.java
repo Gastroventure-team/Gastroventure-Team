@@ -22,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
-import com.teamproject.gastroventure.adapter.ReviewAdapter;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 /**
@@ -75,7 +74,6 @@ public class ReviewDetailFragment extends Fragment {
         main = (MainActivity)getActivity();
 
         view = inflater.inflate(R.layout.fragment_review_detail, container, false);
-        Log.d(SELECT_KEY,"key = " + select_key);
 
         detail_store_name = view.findViewById(R.id.review_detail_store_name);
         detail_menu = view.findViewById(R.id.review_detail_menu);

@@ -32,7 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
-import com.teamproject.gastroventure.adapter.ReviewAdapter;
 import com.teamproject.gastroventure.adapter.ReviewInsertImgAdapter;
 import com.teamproject.gastroventure.event.ActivityResultEvent;
 import com.teamproject.gastroventure.util.BusProvider;
@@ -136,7 +135,7 @@ public class ReviewModifyFragment extends Fragment {
         btn_modify_image_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                imageSelect();
             }
         });
 
@@ -172,8 +171,7 @@ public class ReviewModifyFragment extends Fragment {
                 reviewVo.setReview_content(review_content);
                 reviewVo.setRating_num(rating_num);
 
-
-                databaseReference.child("Review").child(select_key).push().setValue(reviewVo); // child 는 컬럼의 기본키?
+                databaseReference.child(CHILE_NAME).child(select_key).setValue(reviewVo); // child 는 컬럼의 기본키?
 
                 main.replaceFragment(new ReviewFragment());
             }
