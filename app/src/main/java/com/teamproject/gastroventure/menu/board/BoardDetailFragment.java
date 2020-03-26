@@ -1,40 +1,53 @@
 package com.teamproject.gastroventure.menu.board;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.vo.BoardVo;
 
 
 public class BoardDetailFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
-    private EditText board_detail_title;
-    private EditText board_detail_content;
+    private TextView board_detail_title;
+    private TextView board_detail_content;
+    private View view;
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
+    private Button board_update_btn;
+    private Button detail_cancle_btn;
+    private BoardVo boardVo;
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String SELECT_KEY = "select_key";
+
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String select_key;
+
 
     public BoardDetailFragment() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static BoardDetailFragment newInstance(String param1, String param2) {
+    public static BoardDetailFragment newInstance(String select_key ) {
         BoardDetailFragment fragment = new BoardDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(SELECT_KEY, select_key);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,8 +56,8 @@ public class BoardDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            select_key = getArguments().getString(SELECT_KEY);
+
         }
     }
 
@@ -52,6 +65,34 @@ public class BoardDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_board_detail, container, false);
+        view = inflater.inflate(R.layout.fragment_board_detail, container, false);
+        board_detail_content = view.findViewById(R.id.board_detail_content);
+        board_detail_title = view.findViewById(R.id.board_detail_title);
+        board_update_btn = view.findViewById(R.id.board_update_btn);
+        detail_cancle_btn = view.findViewById(R.id.detail_cancle_btn);
+        database  = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        databaseReference = database.getReference(); // DB 테이블 연결
+
+        dataRead();
+        return view;
+    }
+    public void dataRead(){
+        databaseReference.child("Board").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            //FireBase Database의 데이터를 받아오는곳
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    BoardVo boardVo = snapshot.getValue(BoardVo.class);
+
+                    board_detail_title.setText(boardVo.getBoard_title());
+                    board_detail_content.setText(boardVo.getBoard_content());
+                }
+            }
+            //DB를 가져오던중 에러 발생할경우
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("MainActivity", String.valueOf(databaseError.toException()));
+            }
+        });
     }
 }

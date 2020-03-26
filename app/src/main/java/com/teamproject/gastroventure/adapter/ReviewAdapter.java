@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teamproject.gastroventure.R;
-import com.teamproject.gastroventure.datainterface.ReviewInterface;
+import com.teamproject.gastroventure.datainterface.DataInterface;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.util.ArrayList;
@@ -27,12 +27,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
     private ArrayList<ReviewVo> reviewList;
     private Context context;
    // private ReviewFragment reviewFragment;
-    private ReviewInterface reviewInterface;
+    private DataInterface dataInterface;
 
-    public ReviewAdapter(ArrayList<ReviewVo> arrayList, Context context, ReviewInterface reviewInterface) {
+    public ReviewAdapter(ArrayList<ReviewVo> arrayList, Context context, DataInterface dataInterface) {
         this.reviewList = arrayList;
         this.context = context;
-        this.reviewInterface = reviewInterface;
+        this.dataInterface = dataInterface;
     }
 
     @NonNull
@@ -49,8 +49,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
     @Override
     //각 아이템들에 대한 매칭을 시켜준다
     public void onBindViewHolder(@NonNull BoardViewHolder holder, int position) {
-        //holder.reviewVo = (ReviewVo) reviewList.get(position);
-
         Glide.with(holder.itemView)
                 .load(reviewList.get(position).getMenu_image())
                 .into(holder.review_img);
@@ -82,8 +80,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
                 @Override
                 public void onClick(View v) {
                     String key = reviewList.get(getAdapterPosition()).getReview_key();
-
-                    reviewInterface.dataDetail(key);
+                    dataInterface.dataDetail(key);
                 }
             });
 
@@ -91,11 +88,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
                 @Override
                 public boolean onLongClick(View v) {
                     String key = reviewList.get(getAdapterPosition()).getReview_key();
-                    Log.d("리뷰키!!!!", key);
-
-                    reviewInterface.dataRemove(key);
-
-                    //reviewFragment.dataRemove(context, key);
+                    dataInterface.dataRemove(key);
                     return false;
                 }
             });

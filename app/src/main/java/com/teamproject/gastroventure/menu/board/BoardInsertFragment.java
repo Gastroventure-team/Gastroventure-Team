@@ -1,10 +1,6 @@
 package com.teamproject.gastroventure.menu.board;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,10 +19,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
-import com.teamproject.gastroventure.adapter.BoardAdapter;
 import com.teamproject.gastroventure.vo.BoardVo;
 
-import java.util.GregorianCalendar;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class BoardInsertFragment extends Fragment {
@@ -38,7 +38,7 @@ public class BoardInsertFragment extends Fragment {
     private Button board_cancle_btn;
     private FirebaseDatabase boardDatabase;
     private DatabaseReference databaseReference;
-    private GregorianCalendar date = new GregorianCalendar();
+
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -76,7 +76,7 @@ public class BoardInsertFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       view = inflater.inflate(R.layout.fragment_board_insert_form,container,false);
+        view = inflater.inflate(R.layout.fragment_board_insert_form,container,false);
         mainActivity = (MainActivity) getActivity();
 
         board_insert_title = view.findViewById(R.id.board_insert_title);
@@ -93,9 +93,9 @@ public class BoardInsertFragment extends Fragment {
             public void onClick(View v) {
                 String title = board_insert_title.getText().toString();
                 String content = board_insert_content.getText().toString();
-                int month = date.get(date.MONTH)+1;
-                int year = date.get(date.YEAR);
-                int day = date.get(date.DAY_OF_MONTH);
+                Date c = Calendar.getInstance().getTime();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일");
+                String date = df.format(c);
 
                 if (title.isEmpty()){
                     Toast.makeText(getContext(),"제목을 입력해주세요",Toast.LENGTH_SHORT).show();
@@ -116,7 +116,8 @@ public class BoardInsertFragment extends Fragment {
 
                 boardVo.setBoard_title(title);
                 boardVo.setBoard_content(content);
-                boardVo.setBoard_date(year+"-"+month+"-"+day);
+                boardVo.setBoard_date(date);
+
 
                 databaseReference.child("Board").push().setValue(boardVo);
 
@@ -130,7 +131,7 @@ public class BoardInsertFragment extends Fragment {
             }
         });
 
-       return view;
+        return view;
     }
 
     public void dataRead(){

@@ -28,13 +28,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewAdapter;
-import com.teamproject.gastroventure.datainterface.ReviewInterface;
+import com.teamproject.gastroventure.datainterface.DataInterface;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.util.ArrayList;
 
-public class ReviewFragment extends Fragment implements ReviewInterface {
+public class ReviewFragment extends Fragment implements DataInterface {
     private final String TAG = "ReviewFrag Log";
     private final String CHILE_NAME = "Review";
 
@@ -100,7 +100,6 @@ public class ReviewFragment extends Fragment implements ReviewInterface {
                     Log.d(TAG, " 메뉴이름! " + reviewVo.getMenu());
                     Log.d(TAG, " 리뷰 키! " + reviewVo.getReview_key());
                 }
-                Log.d(TAG, "리스트 사이즈 : " + reviewList.size());
                 reviewAdapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
             }
 
@@ -125,11 +124,8 @@ public class ReviewFragment extends Fragment implements ReviewInterface {
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {//Yes
                     try {
-                        Log.d("키 맞다고!!!!", key);
                         databaseReference.child(CHILE_NAME).child(key).removeValue();
-
                         dataRead();
-                        //reviewAdapter.notifyDataSetChanged();
                     } catch (Exception e){
                         Log.d(TAG, e.getMessage());
                     }

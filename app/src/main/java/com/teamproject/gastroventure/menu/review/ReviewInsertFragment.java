@@ -2,8 +2,6 @@ package com.teamproject.gastroventure.menu.review;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,7 +22,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
@@ -112,7 +109,7 @@ public class ReviewInsertFragment extends Fragment {
         btn_image_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                imageSelect();
             }
         });
 

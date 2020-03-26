@@ -16,14 +16,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
-            android:hint="상호명" />
+            android:hint="@string/store_name" />
 
         <EditText
             android:id="@+id/review_insert_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
-            android:hint="먹은 메뉴" />
+            android:hint="@string/menu" />
 
         <RatingBar
             android:id="@+id/review_insert_rating"
@@ -39,7 +39,7 @@
             android:layout_height="300dp"
             android:paddingLeft="5dp"
             android:background="@drawable/border"
-            android:hint="리뷰 내용" />
+            android:hint="@string/review_content" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/insert_rcv_image"
@@ -64,7 +64,7 @@
                 android:layout_below="@+id/act_insert_content_text"
                 android:layout_weight="1"
                 android:background="@drawable/border"
-                android:text="이미지 추가" />
+                android:text="@string/review_image_add" />
 
 
             <Button
@@ -75,7 +75,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/border"
-                android:text="리뷰 입력" />
+                android:text="@string/review_insert" />
 
             <Button
                 android:id="@+id/review_cancel_btn"
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/border"
-                android:text="뒤로 가기" />
+                android:text="@string/review_cancel" />
 
         </LinearLayout>
     </LinearLayout>

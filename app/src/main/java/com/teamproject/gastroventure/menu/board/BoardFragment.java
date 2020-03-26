@@ -1,17 +1,18 @@
 package com.teamproject.gastroventure.menu.board;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,13 +25,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.BoardAdapter;
-import com.teamproject.gastroventure.menu.review.ReviewInsertFragment;
+import com.teamproject.gastroventure.datainterface.DataInterface;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.BoardVo;
 
 import java.util.ArrayList;
 
-public class BoardFragment extends Fragment {
-
+public class BoardFragment extends Fragment implements DataInterface {
+    private final String TAG = "BoardFrag LOG";
     private View view;
     private RecyclerView board_list;
     private RecyclerView.Adapter adapter;
@@ -39,7 +41,7 @@ public class BoardFragment extends Fragment {
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     FloatingActionButton board_fab;
-//    private Intent intent;
+    //    private Intent intent;
     private String title, content;
     private MainActivity mainActivity;
 
@@ -71,32 +73,6 @@ public class BoardFragment extends Fragment {
 
         return view;
     }
-    public void onItemClick(int pos){
-        Toast.makeText(getContext(),"클릭되었습니다",Toast.LENGTH_SHORT).show();
-    }
-
-    public void onLongClick(final String key){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("삭제").setMessage("정말 삭제하시겠습니까?");
-        builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                databaseReference.child("Board").child(key).removeValue();
-                dataRead();
-                dialog.dismiss();
-            }
-        });
-        builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-
-    }
 
     public void dataRead(){
         databaseReference.child("Board").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -121,14 +97,40 @@ public class BoardFragment extends Fragment {
                 Log.e("MainActivity", String.valueOf(databaseError.toException()));
             }
         });
-        adapter = new BoardAdapter(arrayList,getContext());
+        adapter = new BoardAdapter(arrayList,getContext(),this);
         board_list.setAdapter(adapter);//리사이클러뷰에 어댑터 연결
 
     }
 
 
+    @Override
+    public void dataRemove(final String key) {
+        Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (msg.what == 1) {//Yes
+                    try {
+                        Log.d("키 맞다고!!!!", key);
+                        databaseReference.child("Board").child(key).removeValue();
+
+                        dataRead();
+                        //reviewAdapter.notifyDataSetChanged();
+                    } catch (Exception e){
+                        Log.d(TAG, e.getMessage());
+                    }
+                }
+            }
+        };
+
+        DialogSampleUtil.showConfirmDialog(getContext(), "", "선택한 리뷰를 삭제 하시겠습니까?", handler);
+
+    }
 
 
-
-
+    @Override
+    public void dataDetail(String key) {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction =  fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_frame, BoardDetailFragment.newInstance(key)).commit();
+    }
 }
