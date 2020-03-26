@@ -12,6 +12,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 
@@ -22,6 +24,9 @@ import com.teamproject.gastroventure.R;
  * create an instance of this fragment.
  */
 public class MemberLoginFormFragment extends Fragment {
+
+    private FirebaseDatabase member_db;
+    private DatabaseReference db_ref;
 
     public static MemberLoginFormFragment newInstance(){
         return new MemberLoginFormFragment();
@@ -86,6 +91,9 @@ public class MemberLoginFormFragment extends Fragment {
                              Bundle savedInstanceState) {
         view =inflater.inflate(R.layout.fragment_member_login_form, container, false);
 
+        member_db = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
+        db_ref = member_db.getReference(); // DB 테이블 연결
+
         login_userFrag = new LoginUserInfoFragment();
         find_id_pwd_Frag = new MemberFindIdPwd();
 
@@ -103,20 +111,20 @@ public class MemberLoginFormFragment extends Fragment {
         //로그인, 회원가입 버튼
         btn_login = view.findViewById(R.id.btn_login);
 
-        //로그인 정보값 읽어오기
-        id = et_id.getText().toString().trim();
-        pwd = et_pwd.getText().toString().trim();
-
-        //아이디 저장 체크박스가 체크되어있다면 et_id에 입력된 id 저장
-        if(cb_save_id.isChecked()){
-            et_id.setText(id);
-        }
-
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //DB에서 id, pwd 일치하는 경우 로그인 페이지로 이동, 일치하지 않을 경우 다이얼로그 이용해서 알려주기
 
+                //로그인 정보값 읽어오기
+                id = et_id.getText().toString().trim();
+                pwd = et_pwd.getText().toString().trim();
+
+                //아이디 저장 체크박스가 체크되어있다면 et_id에 입력된 id 저장
+                if(cb_save_id.isChecked()){
+                    et_id.setText(id);
+                }
+
+                //DB에서 id, pwd 일치하는 경우 로그인 페이지로 이동, 일치하지 않을 경우 다이얼로그 이용해서 알려주기
 
 
                 main.replaceFragment(login_userFrag);

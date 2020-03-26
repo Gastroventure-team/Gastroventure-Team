@@ -1,13 +1,11 @@
 package com.teamproject.gastroventure.vo;
 
-import com.google.firebase.database.Exclude;
-
 /**
  * Created by hanman-yong on 2020/03/16.
  */
 public class UserInfo {
     public String id;
-    public String pw;
+    public String pwd;
     public String name;
     public String nickname;
     public String tel;
@@ -16,9 +14,9 @@ public class UserInfo {
     }
 
     // 회원가입시
-    public UserInfo(String id, String pw, String name, String nickname, String tel) {
+    public UserInfo(String id, String pwd, String name, String nickname, String tel) {
         this.id = id;
-        this.pw = pw;
+        this.pwd = pwd;
         this.name = name;
         this.nickname = nickname;
         this.tel = tel;
@@ -45,12 +43,12 @@ public class UserInfo {
         this.id = id;
     }
 
-    public String getPw() {
-        return pw;
+    public String getPwd() {
+        return pwd;
     }
 
-    public void setPw(String pw) {
-        this.pw = pw;
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
     }
 
     public String getName() {
