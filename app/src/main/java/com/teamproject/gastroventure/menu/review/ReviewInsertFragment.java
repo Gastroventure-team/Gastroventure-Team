@@ -32,7 +32,7 @@ import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewInsertImgAdapter;
 import com.teamproject.gastroventure.event.ActivityResultEvent;
 import com.teamproject.gastroventure.util.BusProvider;
-import com.teamproject.gastroventure.vo.ReviewInsertImgVo;
+import com.teamproject.gastroventure.vo.ReviewImgVo;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.io.File;
@@ -63,7 +63,7 @@ public class ReviewInsertFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
 
     private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();
-    private ArrayList<ReviewInsertImgVo> reviewImageList = new ArrayList<ReviewInsertImgVo>();
+    private ArrayList<ReviewImgVo> reviewImageList = new ArrayList<ReviewImgVo>();
 
     private Button btn_image_add;
     private Button btn_review_insert;
@@ -120,21 +120,21 @@ public class ReviewInsertFragment extends Fragment {
                 String menu = et_menu.getText().toString();
                 String review_content = et_review_content.getText().toString();
 
-                if(store_name.isEmpty()){
+                if (store_name.isEmpty()) {
                     Toast.makeText(getContext(), "상호명을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if(menu.isEmpty()){
+                if (menu.isEmpty()) {
                     Toast.makeText(getContext(), "메뉴를 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if(review_content.isEmpty()){
+                if (review_content.isEmpty()) {
                     review_content = "";
                 }
 
-                if(rating_num == 0.0){
+                if (rating_num == 0.0) {
                     Toast.makeText(getContext(), "별점은 1점 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -145,6 +145,10 @@ public class ReviewInsertFragment extends Fragment {
                 reviewVo.setMenu(menu);
                 reviewVo.setReview_content(review_content);
                 reviewVo.setRating_num(rating_num);
+
+                // 여기서 리스트에 있는 0번째 이미지를 세팅!
+                // 그리고 그 아래에 이미지 디비도 만들어서 같이 넣어준다. 리스트의 크기만큼 for문 돌려서 다 넣는다.
+                //reviewVo.setMenu_image(reviewImageList.get(0).getMenu_image());
 
                 databaseReference.child("Review").push().setValue(reviewVo); // child 는 컬럼의 기본키?
 
@@ -162,7 +166,7 @@ public class ReviewInsertFragment extends Fragment {
         return view;
     }
 
-    public void imageSelect(){
+    public void imageSelect() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
         alertBuilder.setTitle("실행할 메뉴를 선택하세요.");
 
@@ -192,51 +196,52 @@ public class ReviewInsertFragment extends Fragment {
         alertBuilder.show();
     }
 
-    public void takePhoto(){
+    public void takePhoto() {
         // 촬영 후 이미지 가져옴
         String state = Environment.getExternalStorageState();
 
-        if(Environment.MEDIA_MOUNTED.equals(state)){
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if(intent.resolveActivity(getActivity().getPackageManager())!=null){
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                 File photoFile = null;
-                try{
+                try {
                     photoFile = createImageFile();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                if(photoFile!=null){
-                    Uri providerURI = FileProvider.getUriForFile(getContext(), getActivity().getPackageName(),photoFile);
+                if (photoFile != null) {
+                    Uri providerURI = FileProvider.getUriForFile(getContext(), getActivity().getPackageName(), photoFile);
                     imgUri = providerURI;
                     intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, providerURI);
                     startActivityForResult(intent, PICK_FROM_CAMERA);
                 }
             }
-        }else{
+        } else {
             Log.v("알림", "저장공간에 접근 불가능");
             return;
         }
     }
 
-    public File createImageFile() throws IOException{
+    public File createImageFile() throws IOException {
         String imgFileName = System.currentTimeMillis() + ".jpg";
-        File imageFile= null;
+        File imageFile = null;
         File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "review");
 
-        if(!storageDir.exists()){
+        if (!storageDir.exists()) {
             //없으면 만들기
-            Log.v("알림","storageDir 존재 x " + storageDir.toString());
+            Log.v("알림", "storageDir 존재 x " + storageDir.toString());
             storageDir.mkdirs();
         }
-        Log.v("알림","storageDir 존재함 " + storageDir.toString());
-        imageFile = new File(storageDir,imgFileName);
+
+        Log.v("알림", "storageDir 존재함 " + storageDir.toString());
+        imageFile = new File(storageDir, imgFileName);
         mCurrentPhotoPath = imageFile.getAbsolutePath();
 
         return imageFile;
     }
 
-    public void selectAlbum(){
+    public void selectAlbum() {
         //앨범에서 이미지 가져옴
         //앨범 열기
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -245,18 +250,20 @@ public class ReviewInsertFragment extends Fragment {
         startActivityForResult(intent, PICK_FROM_ALBUM);
     }
 
-    public void galleryAddPic(){
+    public void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         getActivity().sendBroadcast(mediaScanIntent);
-        Toast.makeText(getContext(),"사진이 저장되었습니다",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "사진이 저장되었습니다", Toast.LENGTH_SHORT).show();
     }
 
     public void onUriListAdd() {
-        ReviewInsertImgVo reviewInsertImgVo = new ReviewInsertImgVo("", mCurrentPhotoPath);
-        reviewImageList.add(reviewInsertImgVo);
+        // ㅇㅕ기서 파이어베이스 스토리지에 이미지를 저장 해야할듯.
+        ReviewImgVo reviewImgVo = new ReviewImgVo("", mCurrentPhotoPath);
+
+        reviewImageList.add(reviewImgVo);
 
         Log.d(TAG, "" + reviewImageList.size());
 
@@ -292,28 +299,28 @@ public class ReviewInsertFragment extends Fragment {
             return;
         }
 
-        switch (requestCode){
-            case PICK_FROM_ALBUM : {
+        switch (requestCode) {
+            case PICK_FROM_ALBUM: {
                 //앨범에서 가져오기
-                if(data.getData()!=null){
-                    try{
+                if (data.getData() != null) {
+                    try {
                         photoURI = data.getData();
                         mCurrentPhotoPath = String.valueOf(photoURI);
                         //Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photoURI);
                         onUriListAdd();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
                 break;
             }
-            case PICK_FROM_CAMERA : {
+            case PICK_FROM_CAMERA: {
                 //카메라 촬영
-                try{
+                try {
                     Log.v("알림", "FROM_CAMERA 처리");
                     galleryAddPic();
                     onUriListAdd();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;

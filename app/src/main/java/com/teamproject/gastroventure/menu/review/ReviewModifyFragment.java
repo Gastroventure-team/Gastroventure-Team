@@ -32,10 +32,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
-import com.teamproject.gastroventure.adapter.ReviewInsertImgAdapter;
+import com.teamproject.gastroventure.adapter.ReviewModifyImgAdapter;
 import com.teamproject.gastroventure.event.ActivityResultEvent;
 import com.teamproject.gastroventure.util.BusProvider;
-import com.teamproject.gastroventure.vo.ReviewInsertImgVo;
+import com.teamproject.gastroventure.vo.ReviewImgVo;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.io.File;
@@ -68,7 +68,7 @@ public class ReviewModifyFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
 
     private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();
-    private ArrayList<ReviewInsertImgVo> reviewImageList = new ArrayList<ReviewInsertImgVo>();
+    private ArrayList<ReviewImgVo> reviewImageList = new ArrayList<ReviewImgVo>();
 
     private Button btn_modify_image_add;
     private Button btn_review_modify;
@@ -302,12 +302,12 @@ public class ReviewModifyFragment extends Fragment {
     }
 
     public void onUriListAdd() {
-        ReviewInsertImgVo reviewInsertImgVo = new ReviewInsertImgVo("", mCurrentPhotoPath);
-        reviewImageList.add(reviewInsertImgVo);
+        ReviewImgVo reviewImgVo = new ReviewImgVo("", mCurrentPhotoPath);
+        reviewImageList.add(reviewImgVo);
 
         Log.d(TAG, "" + reviewImageList.size());
 
-        modify_food_rcv_view.setAdapter(new ReviewInsertImgAdapter(getContext(), reviewImageList));
+        modify_food_rcv_view.setAdapter(new ReviewModifyImgAdapter(getContext(), reviewImageList));
 
         mCurrentPhotoPath = null;
     }

@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private BoardFragment boardFragment;
     private LogoutUserInfoFragment logoutUserInfoFragment;
 
+    private long time = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,9 +147,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        long time = 0;
-
         // 취소버튼 두번 눌러야 종료.
         if (System.currentTimeMillis() - time >= 2000) {
             time = System.currentTimeMillis();
@@ -155,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (System.currentTimeMillis() - time < 2000) {
             moveTaskToBack(true);
             finish();
-            ActivityCompat.finishAffinity(this);
         }
     }
 }

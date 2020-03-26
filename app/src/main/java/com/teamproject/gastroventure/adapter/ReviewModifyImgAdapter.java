@@ -1,6 +1,7 @@
 package com.teamproject.gastroventure.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -13,16 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
-import com.teamproject.gastroventure.vo.ReviewInsertImgVo;
+import com.teamproject.gastroventure.vo.ReviewImgVo;
 
 import java.util.ArrayList;
 
 public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImgAdapter.MyViewHolder> {
 
     private Context context;
-    private ArrayList<ReviewInsertImgVo> list;
+    private ArrayList<ReviewImgVo> list;
 
-    public ReviewModifyImgAdapter(Context context, ArrayList<ReviewInsertImgVo> list) {
+    public ReviewModifyImgAdapter(Context context, ArrayList<ReviewImgVo> list) {
         super();
         this.context = context;
         this.list = list;
@@ -70,12 +71,10 @@ public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImg
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        ReviewImgVo item = list.get(position);
+        Uri uri = Uri.parse(item.getMenu_image());
+        holder.memo_image.setImageURI(uri);
 
-//        ImageItem item = list.get(position);
-//
-//        Uri uri = Uri.parse(item.getImage());
-//
-//        holder.memo_image.setImageURI(uri);
     }
 
     @Override

@@ -3,15 +3,15 @@ package com.teamproject.gastroventure.vo;
 /**
  * Created by hanman-yong on 2020/03/17.
  */
-public class ReviewInsertImgVo {
+public class ReviewImgVo {
     public String review_key;
     public String review_insert_key;
     public String menu_image;
 
-    public ReviewInsertImgVo() {
+    public ReviewImgVo() {
     }
 
-    public ReviewInsertImgVo(String review_key, String menu_image) {
+    public ReviewImgVo(String review_key, String menu_image) {
         this.review_key = review_key;
         this.menu_image = menu_image;
     }
