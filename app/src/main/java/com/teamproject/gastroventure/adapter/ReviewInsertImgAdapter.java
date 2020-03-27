@@ -35,7 +35,7 @@ public class ReviewInsertImgAdapter extends RecyclerView.Adapter<ReviewInsertImg
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            menu_image = itemView.findViewById(R.id.memo_image);
+            menu_image = itemView.findViewById(R.id.menu_image);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

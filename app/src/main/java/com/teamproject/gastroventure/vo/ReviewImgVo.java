@@ -5,7 +5,7 @@ package com.teamproject.gastroventure.vo;
  */
 public class ReviewImgVo {
     public String review_key;
-    public String review_insert_key;
+    public String review_img_key;
     public String menu_image;
 
     public ReviewImgVo() {
@@ -24,12 +24,12 @@ public class ReviewImgVo {
         this.review_key = review_key;
     }
 
-    public String getReview_insert_key() {
-        return review_insert_key;
+    public String getReview_img_key() {
+        return review_img_key;
     }
 
-    public void setReview_insert_key(String review_insert_key) {
-        this.review_insert_key = review_insert_key;
+    public void setReview_img_key(String review_img_key) {
+        this.review_img_key = review_img_key;
     }
 
     public String getMenu_image() {

@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.adapter.ReviewDetailImgAdapter;
 import com.teamproject.gastroventure.adapter.ReviewModifyImgAdapter;
 import com.teamproject.gastroventure.event.ActivityResultEvent;
 import com.teamproject.gastroventure.util.BusProvider;
@@ -47,7 +48,8 @@ public class ReviewModifyFragment extends Fragment {
     private static final int PICK_FROM_CAMERA = 2;
 
     private static final String SELECT_KEY = "select_key";
-    private final String CHILE_NAME = "Review";
+    private final String CHILE_NAME_REVIEW = "Review";
+    private final String CHILE_NAME_REVIEW_IMAGE = "Review_Image";
     private final String TAG = "ReviewInsertFrag";
 
     private View view;
@@ -69,6 +71,8 @@ public class ReviewModifyFragment extends Fragment {
 
     private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();
     private ArrayList<ReviewImgVo> reviewImageList = new ArrayList<ReviewImgVo>();
+    private ReviewVo reviewVo;
+    private ReviewImgVo reviewImgVo;
 
     private Button btn_modify_image_add;
     private Button btn_review_modify;
@@ -124,6 +128,7 @@ public class ReviewModifyFragment extends Fragment {
         databaseReference = reviewDatabase.getReference(); // DB 테이블 연결
 
         dataRead();
+        imageDataRead();
 
         review_modify_rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -171,7 +176,7 @@ public class ReviewModifyFragment extends Fragment {
                 reviewVo.setReview_content(review_content);
                 reviewVo.setRating_num(rating_num);
 
-                databaseReference.child(CHILE_NAME).child(select_key).setValue(reviewVo); // child 는 컬럼의 기본키?
+                databaseReference.child(CHILE_NAME_REVIEW).child(select_key).setValue(reviewVo); // child 는 컬럼의 기본키?
 
                 main.replaceFragment(new ReviewFragment());
             }
@@ -188,10 +193,10 @@ public class ReviewModifyFragment extends Fragment {
     }
 
     public void dataRead() {
-        databaseReference.child(CHILE_NAME).child(select_key).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(CHILE_NAME_REVIEW).child(select_key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ReviewVo reviewVo = dataSnapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                reviewVo = dataSnapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
                 reviewVo.setReview_key(dataSnapshot.getKey());
 
                 et_modify_store_name.setText(reviewVo.getStore_name());
@@ -207,6 +212,35 @@ public class ReviewModifyFragment extends Fragment {
                 Log.e("ReviewFragment", String.valueOf(databaseError.toException())); // 에러문 출력
             }
         });
+    }
+
+    public void imageDataRead() {
+        databaseReference.child(CHILE_NAME_REVIEW_IMAGE).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // 파이어베이스 데이터베이스의 데이터를 받아오는 곳
+                reviewImageList.clear(); // 기존 배열리스트가 존재하지않게 초기화
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) { // 반복문으로 데이터 List를 추출해냄
+                    reviewImgVo = snapshot.getValue(ReviewImgVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                    reviewImgVo.setReview_img_key(snapshot.getKey());
+
+                    if (reviewImgVo.getReview_key().equals(reviewVo.getReview_key())) {
+                        reviewImageList.add(reviewImgVo); // 담은 데이터들을 배열리스트에 넣고 리사이클러뷰로 보낼 준비
+                        Log.d(TAG, " 리뷰 키 !! " + reviewImgVo.getReview_img_key());
+                        Log.d(TAG, " 사진이름 !! " + reviewImgVo.getMenu_image());
+                    }
+                }
+                reviewModifyAdapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // 디비를 가져오던중 에러 발생 시
+                Log.e("ReviewDetailFragment", String.valueOf(databaseError.toException())); // 에러문 출력
+            }
+        });
+        reviewModifyAdapter = new ReviewDetailImgAdapter(getContext(), reviewImageList);
+        modify_food_rcv_view.setAdapter(reviewModifyAdapter); // 리사이클러뷰에 어댑터 연결
     }
 
     public void imageSelect() {

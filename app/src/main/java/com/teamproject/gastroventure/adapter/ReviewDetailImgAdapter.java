@@ -1,8 +1,6 @@
 package com.teamproject.gastroventure.adapter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +10,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teamproject.gastroventure.R;
-import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.ReviewImgVo;
 
 import java.util.ArrayList;
 
-public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImgAdapter.MyViewHolder> {
+public class ReviewDetailImgAdapter extends RecyclerView.Adapter<ReviewDetailImgAdapter.MyViewHolder> {
 
     private Context context;
     private ArrayList<ReviewImgVo> list;
 
-    public ReviewModifyImgAdapter(Context context, ArrayList<ReviewImgVo> list) {
+    public ReviewDetailImgAdapter(Context context, ArrayList<ReviewImgVo> list) {
         super();
         this.context = context;
         this.list = list;
@@ -35,25 +32,9 @@ public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImg
         public MyViewHolder(View itemView) {
             super(itemView);
             menu_image = itemView.findViewById(R.id.menu_image);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Handler handler = new Handler() {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            if (msg.what == 1) {//Yes
-
-                            }
-                        }
-                    };
-
-                    DialogSampleUtil.showConfirmDialog(context, "", "이미지를 삭제하시겠습니까?", handler);
-
-                }
-            });
         }
     }
+
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {

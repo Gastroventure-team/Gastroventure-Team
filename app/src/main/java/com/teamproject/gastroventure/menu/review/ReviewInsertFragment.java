@@ -2,6 +2,8 @@ package com.teamproject.gastroventure.menu.review;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,11 +23,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.otto.Subscribe;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
@@ -64,6 +73,7 @@ public class ReviewInsertFragment extends Fragment {
 
     private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();
     private ArrayList<ReviewImgVo> reviewImageList = new ArrayList<ReviewImgVo>();
+    private ArrayList<Uri> imgUriList = new ArrayList<Uri>();
 
     private Button btn_image_add;
     private Button btn_review_insert;
@@ -73,6 +83,10 @@ public class ReviewInsertFragment extends Fragment {
     private String mCurrentPhotoPath;
     private Uri imgUri, photoURI;
     private File tempFile;
+
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference spaceRef;
 
     @Nullable
     @Override
@@ -99,6 +113,14 @@ public class ReviewInsertFragment extends Fragment {
         reviewDatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
         databaseReference = reviewDatabase.getReference(); // DB 테이블 연결
 
+        // 가장 먼저, FirebaseStorage 인스턴스를 생성한다
+        // getInstance() 파라미터에 들어가는 값은 firebase console에서
+        // storage를 추가하면 상단에 gs:// 로 시작하는 스킴을 확인할 수 있다
+        storage = FirebaseStorage.getInstance("gs://gastroventure-7f99f.appspot.com/");
+
+        // 위에서 생성한 FirebaseStorage 를 참조하는 storage를 생성한다
+        storageRef = storage.getReference();
+
         review_rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
@@ -120,21 +142,21 @@ public class ReviewInsertFragment extends Fragment {
                 String menu = et_menu.getText().toString();
                 String review_content = et_review_content.getText().toString();
 
-                if (store_name.isEmpty()) {
+                if(store_name.isEmpty()){
                     Toast.makeText(getContext(), "상호명을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (menu.isEmpty()) {
+                if(menu.isEmpty()){
                     Toast.makeText(getContext(), "메뉴를 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (review_content.isEmpty()) {
+                if(review_content.isEmpty()){
                     review_content = "";
                 }
 
-                if (rating_num == 0.0) {
+                if(rating_num == 0.0){
                     Toast.makeText(getContext(), "별점은 1점 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -145,12 +167,18 @@ public class ReviewInsertFragment extends Fragment {
                 reviewVo.setMenu(menu);
                 reviewVo.setReview_content(review_content);
                 reviewVo.setRating_num(rating_num);
+                reviewVo.setMenu_image(imgUriList.get(0).toString());
 
-                // 여기서 리스트에 있는 0번째 이미지를 세팅!
-                // 그리고 그 아래에 이미지 디비도 만들어서 같이 넣어준다. 리스트의 크기만큼 for문 돌려서 다 넣는다.
-                //reviewVo.setMenu_image(reviewImageList.get(0).getMenu_image());
+                String review_key = databaseReference.push().getKey();
 
-                databaseReference.child("Review").push().setValue(reviewVo); // child 는 컬럼의 기본키?
+                databaseReference.child("Review").child(review_key).setValue(reviewVo); // child 는 컬럼의 기본키?
+
+                ReviewImgVo reviewImgVo = new ReviewImgVo();
+                for(Uri uri : imgUriList) {
+                    reviewImgVo.setMenu_image(uri.toString());
+                    reviewImgVo.setReview_key(review_key);
+                    databaseReference.child("Review_Image").push().setValue(reviewImgVo);
+                }
 
                 main.replaceFragment(new ReviewFragment());
             }
@@ -159,6 +187,7 @@ public class ReviewInsertFragment extends Fragment {
         btn_review_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // spaceRef.child("images").delete();
                 main.replaceFragment(new ReviewFragment());
             }
         });
@@ -166,7 +195,7 @@ public class ReviewInsertFragment extends Fragment {
         return view;
     }
 
-    public void imageSelect() {
+    public void imageSelect(){
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
         alertBuilder.setTitle("실행할 메뉴를 선택하세요.");
 
@@ -196,52 +225,52 @@ public class ReviewInsertFragment extends Fragment {
         alertBuilder.show();
     }
 
-    public void takePhoto() {
+    public void takePhoto(){
         // 촬영 후 이미지 가져옴
         String state = Environment.getExternalStorageState();
 
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
+        if(Environment.MEDIA_MOUNTED.equals(state)){
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            if(intent.resolveActivity(getActivity().getPackageManager())!=null){
                 File photoFile = null;
-                try {
+                try{
                     photoFile = createImageFile();
-                } catch (IOException e) {
+                }catch (IOException e){
                     e.printStackTrace();
                 }
 
-                if (photoFile != null) {
-                    Uri providerURI = FileProvider.getUriForFile(getContext(), getActivity().getPackageName(), photoFile);
+                if(photoFile!=null){
+                    Uri providerURI = FileProvider.getUriForFile(getContext(), getActivity().getPackageName(),photoFile);
                     imgUri = providerURI;
                     intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, providerURI);
                     startActivityForResult(intent, PICK_FROM_CAMERA);
                 }
             }
-        } else {
+        }else{
             Log.v("알림", "저장공간에 접근 불가능");
             return;
         }
     }
 
-    public File createImageFile() throws IOException {
+    public File createImageFile() throws IOException{
         String imgFileName = System.currentTimeMillis() + ".jpg";
-        File imageFile = null;
+        File imageFile= null;
         File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "review");
 
-        if (!storageDir.exists()) {
+        if(!storageDir.exists()){
             //없으면 만들기
-            Log.v("알림", "storageDir 존재 x " + storageDir.toString());
+            Log.v("알림","storageDir 존재 x " + storageDir.toString());
             storageDir.mkdirs();
         }
 
-        Log.v("알림", "storageDir 존재함 " + storageDir.toString());
-        imageFile = new File(storageDir, imgFileName);
+        Log.v("알림","storageDir 존재함 " + storageDir.toString());
+        imageFile = new File(storageDir,imgFileName);
         mCurrentPhotoPath = imageFile.getAbsolutePath();
 
         return imageFile;
     }
 
-    public void selectAlbum() {
+    public void selectAlbum(){
         //앨범에서 이미지 가져옴
         //앨범 열기
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -250,26 +279,79 @@ public class ReviewInsertFragment extends Fragment {
         startActivityForResult(intent, PICK_FROM_ALBUM);
     }
 
-    public void galleryAddPic() {
+    public void galleryAddPic(){
+        // 여기서..?
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        getActivity().sendBroadcast(mediaScanIntent);
-        Toast.makeText(getContext(), "사진이 저장되었습니다", Toast.LENGTH_SHORT).show();
+        getContext().sendBroadcast(mediaScanIntent);
+        Toast.makeText(getContext(),"사진이 저장되었습니다",Toast.LENGTH_SHORT).show();
     }
 
     public void onUriListAdd() {
         // ㅇㅕ기서 파이어베이스 스토리지에 이미지를 저장 해야할듯.
         ReviewImgVo reviewImgVo = new ReviewImgVo("", mCurrentPhotoPath);
+        Log.d(TAG, "이미지경로 : " + mCurrentPhotoPath);
+
+        uploadFireBase(mCurrentPhotoPath);
 
         reviewImageList.add(reviewImgVo);
 
-        Log.d(TAG, "" + reviewImageList.size());
+        Log.d(TAG, "이미지리스트 사이즈 : " + reviewImageList.size());
 
         food_rcv_view.setAdapter(new ReviewInsertImgAdapter(getContext(), reviewImageList));
 
         mCurrentPhotoPath = null;
+    }
+
+    public void uploadFireBase(String pathName) {
+
+        Uri file = Uri.fromFile(new File(pathName));
+
+        // 위의 저장소를 참조하는 images 폴더를 연결한다.
+        spaceRef = storageRef.child("images/" + file.getLastPathSegment());
+        UploadTask uploadTask = spaceRef.putFile(file);
+
+        // 파일 업로드의 성공/실패에 대한 콜백 받아 핸들링 하기 위해 아래와 같이 작성한다
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d(TAG, "사진에러 : " + exception.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                if (taskSnapshot.getMetadata() != null) {
+                    if (taskSnapshot.getMetadata().getReference() != null) {
+                        Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
+                        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String imageUrl = uri.toString();
+                                // 성공?
+                                imgUriList.add(uri);
+                                Log.d(TAG, "성공해따! : " + imageUrl);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    public String getPath(Uri uri){
+        String [] proj = {MediaStore.Images.Media.DATA};
+
+        CursorLoader cursorLoader = new CursorLoader(getContext(), uri, proj, null, null, null);
+
+        Cursor cursor = cursorLoader.loadInBackground();
+
+        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        return cursor.getString(index);
     }
 
     @Override
@@ -299,28 +381,29 @@ public class ReviewInsertFragment extends Fragment {
             return;
         }
 
-        switch (requestCode) {
-            case PICK_FROM_ALBUM: {
+        switch (requestCode){
+            case PICK_FROM_ALBUM : {
                 //앨범에서 가져오기
-                if (data.getData() != null) {
-                    try {
+                if(data.getData()!=null){
+                    try{
                         photoURI = data.getData();
-                        mCurrentPhotoPath = String.valueOf(photoURI);
-                        //Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), photoURI);
+                        mCurrentPhotoPath = getPath(photoURI);
+
+                        galleryAddPic();
                         onUriListAdd();
-                    } catch (Exception e) {
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
                 break;
             }
-            case PICK_FROM_CAMERA: {
+            case PICK_FROM_CAMERA : {
                 //카메라 촬영
-                try {
+                try{
                     Log.v("알림", "FROM_CAMERA 처리");
                     galleryAddPic();
                     onUriListAdd();
-                } catch (Exception e) {
+                }catch (Exception e){
                     e.printStackTrace();
                 }
                 break;
