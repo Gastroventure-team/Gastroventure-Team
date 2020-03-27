@@ -103,7 +103,7 @@ public class MemberRegisterFragment extends Fragment {
         logoutFrag = new LogoutUserInfoFragment();
         main = (MainActivity)getActivity();
 
-        et_id = view.findViewById(R.id.et_id);
+        et_id = view.findViewById(R.id.et_id_email);
         et_pwd = view.findViewById(R.id.et_pwd);
         et_pwd_check= view.findViewById(R.id.et_pwd_check);
         et_name = view.findViewById(R.id.et_name);
