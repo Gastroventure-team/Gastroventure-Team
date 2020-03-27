@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,24 +20,30 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewAdapter;
 import com.teamproject.gastroventure.datainterface.DataInterface;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.vo.ReviewImgVo;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
 import java.util.ArrayList;
 
 public class ReviewFragment extends Fragment implements DataInterface {
     private final String TAG = "ReviewFrag Log";
-    private final String CHILE_NAME = "Review";
+    private final String CHILE_NAME_REVIEW = "Review";
+    private final String CHILE_NAME_REVIEW_IMAGE = "Review_Image";
 
     private View view;
     private FloatingActionButton insert_fbtn;
@@ -47,6 +54,12 @@ public class ReviewFragment extends Fragment implements DataInterface {
 
     private FirebaseDatabase reviewDatabase;
     private DatabaseReference databaseReference;
+
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference spaceRef;
+
+    private String file_name;
 
     private MainActivity main;
     private ProgressDialog progressDialog;
@@ -65,6 +78,12 @@ public class ReviewFragment extends Fragment implements DataInterface {
 
         reviewDatabase = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
         databaseReference = reviewDatabase.getReference(); // DB 테이블 연결
+
+        // 가장 먼저, FirebaseStorage 인스턴스를 생성한다
+        storage = FirebaseStorage.getInstance("gs://gastroventure-7f99f.appspot.com/");
+
+        // 위에서 생성한 FirebaseStorage 를 참조하는 storage를 생성한다
+        storageRef = storage.getReference();
 
         insert_fbtn = view.findViewById(R.id.review_fab);
         insert_fbtn.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +105,7 @@ public class ReviewFragment extends Fragment implements DataInterface {
     }
 
     public void dataRead(){
-        databaseReference.child(CHILE_NAME).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(CHILE_NAME_REVIEW).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // 파이어베이스 데이터베이스의 데이터를 받아오는 곳
@@ -124,7 +143,9 @@ public class ReviewFragment extends Fragment implements DataInterface {
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {//Yes
                     try {
-                        databaseReference.child(CHILE_NAME).child(key).removeValue();
+                        databaseReference.child(CHILE_NAME_REVIEW).child(key).removeValue();
+                        // 해당 키에 대한 이미지도 다 삭제를 해야함.
+                        imgDatabaseDelete(key);
                         dataRead();
                     } catch (Exception e){
                         Log.d(TAG, e.getMessage());
@@ -143,6 +164,45 @@ public class ReviewFragment extends Fragment implements DataInterface {
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.main_frame, ReviewDetailFragment.newInstance(key)).commit();
     }
+
+    public void imgDatabaseDelete(final String key){
+        databaseReference.child(CHILE_NAME_REVIEW_IMAGE).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) { // 반복문으로 데이터 List를 추출해냄
+                    ReviewImgVo reviewImgVo = snapshot.getValue(ReviewImgVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
+                    reviewImgVo.setReview_img_key(snapshot.getKey());
+                    String img_key = reviewImgVo.getReview_img_key();
+
+                    if (reviewImgVo.getReview_key().equals(key)) {
+                        databaseReference.child(CHILE_NAME_REVIEW_IMAGE).child(img_key).removeValue();
+                        imgStorageDel(reviewImgVo.getMenu_image_name());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void imgStorageDel(String imgName){
+        storage.getReference().child("images").child(imgName).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getContext(), "삭제 완료", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(), "삭제 실패", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
 
     public void showProgress(String message) {
         progressDialog = new ProgressDialog(getActivity());
