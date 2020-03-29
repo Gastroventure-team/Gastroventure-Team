@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.datainterface.DataImgInterface;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.ReviewImgVo;
 
@@ -21,11 +22,13 @@ public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImg
 
     private Context context;
     private ArrayList<ReviewImgVo> list;
+    private DataImgInterface dataImgInterface;
 
-    public ReviewModifyImgAdapter(Context context, ArrayList<ReviewImgVo> list) {
+    public ReviewModifyImgAdapter(Context context, ArrayList<ReviewImgVo> list, DataImgInterface dataImgInterface) {
         super();
         this.context = context;
         this.list = list;
+        this.dataImgInterface = dataImgInterface;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -39,20 +42,17 @@ public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImg
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Handler handler = new Handler() {
-                        @Override
-                        public void handleMessage(Message msg) {
-                            if (msg.what == 1) {//Yes
-
-                            }
-                        }
-                    };
-
-                    DialogSampleUtil.showConfirmDialog(context, "", "이미지를 삭제하시겠습니까?", handler);
-
+                    dataImgInterface.dataImgRemove(getAdapterPosition());
+                    removeItemView(getAdapterPosition());
                 }
             });
         }
+    }
+
+    private void removeItemView(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, list.size());
     }
 
     @Override

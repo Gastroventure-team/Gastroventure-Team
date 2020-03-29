@@ -7,6 +7,7 @@ public class ReviewImgVo {
     public String review_key;
     public String review_img_key;
     public String menu_image;
+    public String menu_image_name;
 
     public ReviewImgVo() {
     }
@@ -38,5 +39,13 @@ public class ReviewImgVo {
 
     public void setMenu_image(String menu_image) {
         this.menu_image = menu_image;
+    }
+
+    public String getMenu_image_name() {
+        return menu_image_name;
+    }
+
+    public void setMenu_image_name(String menu_image_name) {
+        this.menu_image_name = menu_image_name;
     }
 }
