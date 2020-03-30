@@ -1,8 +1,7 @@
 package com.teamproject.gastroventure.adapter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.datainterface.DataImgInterface;
-import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.ReviewImgVo;
 
 import java.util.ArrayList;
@@ -31,6 +29,11 @@ public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImg
         this.dataImgInterface = dataImgInterface;
     }
 
+    public ReviewModifyImgAdapter(Context context, ArrayList<ReviewImgVo> list) {
+        this.context = context;
+        this.list = list;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView menu_image;
@@ -42,8 +45,8 @@ public class ReviewModifyImgAdapter extends RecyclerView.Adapter<ReviewModifyImg
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.d("123123","호출호출!!");
                     dataImgInterface.dataImgRemove(getAdapterPosition());
-                    removeItemView(getAdapterPosition());
                 }
             });
         }
