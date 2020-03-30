@@ -128,13 +128,16 @@ public class MemberLoginFormFragment extends Fragment {
                     et_id.setText(id);
                 }
 
+                db_ref.child("Member").orderByChild("id").equalTo(id);
                 //DB에서 id, pwd 일치하는 경우 로그인 페이지로 이동, 일치하지 않을 경우 다이얼로그 이용해서 알려주기
-                db_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                db_ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.hasChild("Member")){
+                        for(DataSnapshot snapshot : dataSnapshot.child("Member").getValue("id")){
+
 
                         }
+
                     }
 
                     @Override
