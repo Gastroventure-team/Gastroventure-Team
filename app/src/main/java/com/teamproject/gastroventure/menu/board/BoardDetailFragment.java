@@ -10,12 +10,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.vo.BoardVo;
 
@@ -30,6 +33,7 @@ public class BoardDetailFragment extends Fragment {
     private Button board_update_btn;
     private Button detail_cancle_btn;
     private BoardVo boardVo;
+    private MainActivity mainActivity;
 
     private static final String SELECT_KEY = "select_key";
 
@@ -43,11 +47,10 @@ public class BoardDetailFragment extends Fragment {
     }
 
     // TODO: Rename and change types and number of parameters
-    public static BoardDetailFragment newInstance(String select_key ) {
+    public static BoardDetailFragment newInstance(String select_key) {
         BoardDetailFragment fragment = new BoardDetailFragment();
         Bundle args = new Bundle();
         args.putString(SELECT_KEY, select_key);
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,27 +69,46 @@ public class BoardDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_board_detail, container, false);
+
         board_detail_content = view.findViewById(R.id.board_detail_content);
         board_detail_title = view.findViewById(R.id.board_detail_title);
         board_update_btn = view.findViewById(R.id.board_update_btn);
         detail_cancle_btn = view.findViewById(R.id.detail_cancle_btn);
+
         database  = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
         databaseReference = database.getReference(); // DB 테이블 연결
+
+        board_update_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.main_frame, BoardModifyFragment.newInstance(select_key)).commit();
+            }
+        });
+        detail_cancle_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainActivity.replaceFragment(new BoardFragment());
+            }
+        });
+
 
         dataRead();
         return view;
     }
     public void dataRead(){
-        databaseReference.child("Board").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("Board").child(select_key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             //FireBase Database의 데이터를 받아오는곳
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    BoardVo boardVo = snapshot.getValue(BoardVo.class);
+
+                    BoardVo boardVo = dataSnapshot.getValue(BoardVo.class);
+                    boardVo.setBoard_key(dataSnapshot.getKey());
 
                     board_detail_title.setText(boardVo.getBoard_title());
                     board_detail_content.setText(boardVo.getBoard_content());
-                }
+
             }
             //DB를 가져오던중 에러 발생할경우
             @Override

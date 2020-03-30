@@ -129,8 +129,8 @@ public class BoardFragment extends Fragment implements DataInterface {
 
     @Override
     public void dataDetail(String key) {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction =  fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_frame, BoardDetailFragment.newInstance(key)).commit();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.main_frame, BoardDetailFragment.newInstance(key)).commit();
     }
 }
