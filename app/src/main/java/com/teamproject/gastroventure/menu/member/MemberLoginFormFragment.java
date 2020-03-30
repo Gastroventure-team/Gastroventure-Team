@@ -4,7 +4,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.vo.UserInfo;
 
 /**
  *
@@ -58,6 +63,8 @@ public class MemberLoginFormFragment extends Fragment {
     MemberFindIdPwd find_id_pwd_Frag;
 
     String id,pwd;
+
+    String check_id, check_pwd;
 
     public MemberLoginFormFragment() {
         // Required empty public constructor
@@ -128,16 +135,38 @@ public class MemberLoginFormFragment extends Fragment {
                     et_id.setText(id);
                 }
 
-                db_ref.child("Member").orderByChild("id").equalTo(id);
                 //DB에서 id, pwd 일치하는 경우 로그인 페이지로 이동, 일치하지 않을 경우 다이얼로그 이용해서 알려주기
-                db_ref.addValueEventListener(new ValueEventListener() {
+                db_ref.child("Member").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot snapshot : dataSnapshot.child("Member").getValue("id")){
+                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+
+                            UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
+
+                            check_id = vo.getId();
+                            check_pwd = vo.getPwd();
+                            Log.d("LLLL", "입력값:"+id +"/"+ pwd+" 체크값:"+check_id +"/"+check_pwd);
+
+                            if(check_id.equals(id) && check_pwd.equals(pwd)){
+                                vo.setUser_key(dataSnapshot1.getKey());
+                                String user_key = vo.getUser_key();
+                                FragmentManager fm = getActivity().getSupportFragmentManager();
+                                FragmentTransaction ft = fm.beginTransaction();
+                                ft.replace(R.id.main_frame, login_userFrag.newInstance(user_key)).commit();
+
+                                Log.d("LLLL", "키값 :" + user_key);
+                                Log.d("LLLL", "if입력값:"+id +"/"+ pwd+"if체크값:"+check_id +"/"+check_pwd);
+                                return;
+                            }
+
+                            //여기서 자꾸 앱종료 된다고 뜸 , 널포인터오류
+                            if(!check_id.equals(id) || !check_pwd.equals(pwd)){
+                                DialogSampleUtil.showMessageDialog(getContext(),"","아이디 또는 비밀번호가 일치하지 않습니다.");
+                                return;
+                            }
 
 
                         }
-
                     }
 
                     @Override
@@ -146,7 +175,6 @@ public class MemberLoginFormFragment extends Fragment {
                     }
                 });
 
-                main.replaceFragment(login_userFrag);
             }
         });
 

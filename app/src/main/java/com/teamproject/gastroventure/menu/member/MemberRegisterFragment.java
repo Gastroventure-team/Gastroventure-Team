@@ -2,6 +2,7 @@ package com.teamproject.gastroventure.menu.member;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -12,8 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
@@ -26,7 +30,7 @@ import com.teamproject.gastroventure.vo.UserInfo;
  */
 public class MemberRegisterFragment extends Fragment {
 
-    final String TAG = "member";
+    final String TAG = "LLLL";
 
     private FirebaseDatabase member_db;
     private DatabaseReference db_ref;
@@ -125,46 +129,90 @@ public class MemberRegisterFragment extends Fragment {
                 pwd = et_pwd.getText().toString().trim();
                 pwd_check = et_pwd_check.getText().toString().trim();
                 name = et_name.getText().toString().trim();
-                nickname = et_name.getText().toString().trim();
+                nickname = et_nickname.getText().toString().trim();
                 tel = et_tel.getText().toString().trim();
 
                 if(id.isEmpty()){
                     Toast.makeText(getContext(),"이메일 형식의 아이디를 입력해주세요",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 if(pwd.isEmpty()){
                     Toast.makeText(getContext(),"비밀번호를 입력해주세요",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 if(pwd_check.isEmpty()){
                     Toast.makeText(getContext(),"비밀번호를 한번 더 입력해주세요",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 if(name.isEmpty()){
                     Toast.makeText(getContext(),"이름을 입력해주세요",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 if(nickname.isEmpty()){
                     Toast.makeText(getContext(),"닉네임을 입력해주세요",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 if(tel.isEmpty()){
                     Toast.makeText(getContext(),"연락처를 입력해주세요",Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
+                //비밀번호 재확인 정상작동
                 //비밀번호 확인
                 if(!pwd_check.equals(pwd)){
                     //비밀번호 확인했을 때 같지않을 경우
                     DialogSampleUtil.showMessageDialog(getContext(),"","비밀번호가 일치하지 않습니다. 다시 확인해주세요");
                     et_pwd_check.setText("");
                     et_pwd_check.requestFocus();
-
-                    return;
                 }
-                //DB로 인서트
-                UserInfo vo = new UserInfo();
-                vo.setId(id);
-                vo.setPwd(pwd);
-                vo.setName(name);
-                vo.setNickname(nickname);
-                vo.setTel(tel);
 
-                db_ref.child("Member").push().setValue(vo);
+                db_ref.child("Member").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                            UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
+
+                            String check_id = vo.getId();
+                            Log.d(TAG, "if전 사용중 아이디 확인 :"+check_id);
+                            if(check_id.equals(id)){
+                                //여기서 에러
+                                DialogSampleUtil.showMessageDialog(getContext(),"","이미 사용중인 아이디 입니다.");
+                                et_id.setText("");
+                                et_id.requestFocus();
+                                return;
+                            }
+                            String check_tel = vo.getTel();
+                            Log.d(TAG, "if전 사용중 전화번호 확인 :"+check_tel);
+                            if(check_tel.equals(tel)){
+                                DialogSampleUtil.showMessageDialog(getContext(),"","이미 사용중인 전화번호 입니다.");
+                                et_tel.setText("");
+                                et_tel.requestFocus();
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //datasnapshot 안에서는 안들어가짐
+
+                //DB로 인서트
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(id);
+                userInfo.setPwd(pwd);
+                userInfo.setName(name);
+                userInfo.setNickname(nickname);
+                userInfo.setTel(tel);
+
+                Log.d(TAG, "정보확인 :"+ id+"/"+pwd+"/"+name+"/"+nickname+"/"+tel);
+
+                db_ref.child("Member").push().setValue(userInfo);
+
+                Log.d(TAG, "member 테이블에 입력 끝");
 
                 main.replaceFragment(loginFrag);
             }
