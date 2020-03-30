@@ -1,5 +1,6 @@
 package com.teamproject.gastroventure.menu.review;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,6 +90,7 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
     private ArrayList<ReviewImgVo> reviewImageList = new ArrayList<ReviewImgVo>();
     private ArrayList<Uri> imgUriList = new ArrayList<Uri>();
     private ArrayList<String> imgNameList = new ArrayList<String>();
+    private ArrayList<String> reviewKeyList = new ArrayList<String>();
 
     private ReviewVo reviewVo;
     private ReviewImgVo reviewImgVo;
@@ -206,7 +209,10 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
 
                 ReviewImgVo review_insertImgVo = new ReviewImgVo();
 
-                if(!reviewImageList.isEmpty()) {
+                if (!reviewImageList.isEmpty()) {
+                    for(String key : reviewKeyList){
+                        databaseReference.child(CHILE_NAME_REVIEW_IMAGE).child(key).removeValue();
+                    }
                     for (int i = 0; i < imgUriList.size(); i++) {
                         review_insertImgVo.setMenu_image(imgUriList.get(i).toString());
                         review_insertImgVo.setMenu_image_name(imgNameList.get(i));
@@ -267,6 +273,7 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
                         Log.d(TAG, " 사진이름 !! " + reviewImgVo.getMenu_image());
                         imgUriList.add(Uri.parse(reviewImgVo.getMenu_image()));
                         imgNameList.add(reviewImgVo.getMenu_image_name());
+                        reviewKeyList.add(reviewImgVo.getReview_img_key());
                     }
                 }
                 reviewModifyAdapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
@@ -278,7 +285,7 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
                 Log.e("ReviewDetailFragment", String.valueOf(databaseError.toException())); // 에러문 출력
             }
         });
-        reviewModifyAdapter = new ReviewDetailImgAdapter(getContext(), reviewImageList);
+        reviewModifyAdapter = new ReviewModifyImgAdapter(getContext(), reviewImageList, this);
         modify_food_rcv_view.setAdapter(reviewModifyAdapter); // 리사이클러뷰에 어댑터 연결
     }
 
@@ -366,6 +373,8 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
     }
 
     public void onUriListAdd() {
+        DialogSampleUtil.showProgress(getContext(), "사진 업로드 중이니 잠시 기다려주세요.");
+
         ReviewImgVo reviewImgVo = new ReviewImgVo("", mCurrentPhotoPath);
         reviewImageList.add(reviewImgVo);
 
@@ -381,6 +390,7 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
     public void uploadFireBase(String pathName) {
         Uri file = Uri.fromFile(new File(pathName));
         file_name = file.getLastPathSegment();
+        imgNameList.add(file_name);
 
         // 위의 저장소를 참조하는 images 폴더를 연결한다.
         spaceRef = storageRef.child("images/" + file_name);
@@ -391,6 +401,7 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 Log.d(TAG, "사진에러 : " + exception.getMessage());
+                Toast.makeText(getContext(), "업로드에 실패하였습니다.", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -401,10 +412,9 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
                         result.addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                String imageUrl = uri.toString();
                                 imgUriList.add(uri);
-                                imgNameList.add(file_name);
-                                Log.d(TAG, "이미지 업로드 성공 url : " + imageUrl);
+                                Toast.makeText(getContext(), "업로드에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+                                DialogSampleUtil.hideProgress();
                             }
                         });
                     }
@@ -493,11 +503,13 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
                 if (msg.what == 1) {//Yes
                     String fileName = imgNameList.get(position);
                     imgNameList.remove(position);
+                    reviewImageList.remove(position);
 
                     storage.getReference().child("images").child(fileName).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getContext(), "삭제 완료", Toast.LENGTH_LONG).show();
+                            modify_food_rcv_view.setAdapter(new ReviewModifyImgAdapter(getContext(), reviewImageList));
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override

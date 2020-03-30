@@ -2,6 +2,7 @@ package com.teamproject.gastroventure.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,11 @@ public class ReviewInsertImgAdapter extends RecyclerView.Adapter<ReviewInsertImg
         this.dataImgInterface = dataImgInterface;
     }
 
+    public ReviewInsertImgAdapter(Context context, ArrayList<ReviewImgVo> list) {
+        this.context = context;
+        this.list = list;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView menu_image;
@@ -40,7 +46,10 @@ public class ReviewInsertImgAdapter extends RecyclerView.Adapter<ReviewInsertImg
                 @Override
                 public void onClick(View v) {
                     dataImgInterface.dataImgRemove(getAdapterPosition());
-                    removeItemView(getAdapterPosition());
+//                    Log.d("123123", "과연 리턴값은?! " + result);
+//                    if (result) {
+//                        removeItemView(getAdapterPosition());
+//                    }
                 }
             });
         }

@@ -62,7 +62,6 @@ public class ReviewFragment extends Fragment implements DataInterface {
     private String file_name;
 
     private MainActivity main;
-    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -98,12 +97,6 @@ public class ReviewFragment extends Fragment implements DataInterface {
         return view;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        showProgress("로딩중...");
-    }
-
     public void dataRead(){
         databaseReference.child(CHILE_NAME_REVIEW).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -131,8 +124,6 @@ public class ReviewFragment extends Fragment implements DataInterface {
 
         reviewAdapter = new ReviewAdapter(reviewList, getContext(), this);
         review_rcv_list.setAdapter(reviewAdapter); // 리사이클러뷰에 어댑터 연결
-
-        hideProgress();
     }
 
     @Override
@@ -200,25 +191,5 @@ public class ReviewFragment extends Fragment implements DataInterface {
                 Toast.makeText(getContext(), "삭제 실패", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-
-
-    public void showProgress(String message) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(false);
-        progressDialog.setCancelable(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-        progressDialog.show();
-    }
-
-    public void hideProgress() {
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-            progressDialog = null;
-        }
     }
 }

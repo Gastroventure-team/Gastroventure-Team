@@ -74,7 +74,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/border"
-                android:text="@string/review_insert" />
+                android:text="@string/review_modify" />
 
             <Button
                 android:id="@+id/review_modify_cancel_btn"
