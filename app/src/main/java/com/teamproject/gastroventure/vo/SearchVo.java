@@ -4,6 +4,8 @@ package com.teamproject.gastroventure.vo;
  * Created by 82108 on 2020-03-16.
  */
 public class SearchVo {
+
+    public static int pageable_count = 0;
     String place_name;
     String place_url;
     String address;
