@@ -25,7 +25,7 @@ import com.teamproject.gastroventure.vo.SearchVo;
 public class SearchUtil {
 
     public static List<SearchVo>  getLocalListFromJson(
-            String  keyword,      //검색어
+            //String  keyword,      //검색어
             double latitude,      //위도
             double longitude,     //경도
             int radius,
@@ -35,10 +35,10 @@ public class SearchUtil {
 
         //        3ebe1c7e586491e37bc04090f8d133b0
         //String  kakaoAK = "KakaoAK 3ebe1c7e586491e37bc04090f8d133b0";
-        keyword = URLEncoder.encode(keyword, "utf-8");
+        //keyword = URLEncoder.encode(keyword, "utf-8");
         String  kakaoAK = MyOpenAPIKey.Daum.KAKAOAK;
-        String urlStr = String.format("https://dapi.kakao.com/v2/local/search/keyword.json?query=%s&x=%f&y=%f&radius=%d&page=%d&size=%d",
-                keyword,longitude,latitude,radius,page,size
+        String urlStr = String.format("https://dapi.kakao.com/v2/local/search/cagegory.json?category_group_code=%s&query=x=%f&y=%f&radius=%d&page=%d&size=%d",
+                "FD6",longitude,latitude,radius,page,size
         );
 
         URL url = new URL(urlStr);
@@ -81,6 +81,7 @@ public class SearchUtil {
             vo.setCategory_group_name(local.getString("category_group_name"));
             vo.setCategory_name(local.getString("category_name"));
             vo.setPhone(local.getString("phone"));
+            vo.setCategory_group_code("category_group_code");
 
             int distance=0;
             double local_longitude=0;
@@ -135,8 +136,8 @@ public class SearchUtil {
         //String  kakaoAK = "KakaoAK 3ebe1c7e586491e37bc04090f8d133b0";
         keyword = URLEncoder.encode(keyword, "utf-8");
         String  kakaoAK = MyOpenAPIKey.Daum.KAKAOAK;
-        String urlStr = String.format("https://dapi.kakao.com/v2/local/search/keyword.xml?query=%s&x=%f&y=%f&radius=%d&page=%d&size=%d",
-                keyword,longitude,latitude,radius,page,size
+        String urlStr = String.format("https://dapi.kakao.com/v2/local/search/category.xml?category_group_code=%s&query=%s&x=%f&y=%f&radius=%d&page=%d&size=%d",
+                "FD6",keyword,longitude,latitude,radius,page,size
         );
 
         URL url = new URL(urlStr);
@@ -196,6 +197,7 @@ public class SearchUtil {
             vo.setAddress(local.getChildText("address_name"));
             vo.setRoad_address(local.getChildText("road_address_name"));
             vo.setPhone(local.getChildText("phone"));
+
 
             int distance=0;
             double local_longitude=0;
