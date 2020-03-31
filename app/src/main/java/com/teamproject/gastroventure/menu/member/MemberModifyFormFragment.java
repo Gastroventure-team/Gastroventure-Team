@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,8 @@ import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.UserInfo;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,11 +49,13 @@ public class MemberModifyFormFragment extends Fragment {
     EditText et_id_email,et_pwd, et_pwd_check, et_name, et_nickname, et_tel;
     Button btn_modify, btn_cancel;
 
-    MainActivity main = (MainActivity)getActivity();
+    MainActivity main;
 
     LoginUserInfoFragment login_user_info_Frag;
 
     String pwd,pwd_check,name,nickname,tel;
+
+    private ArrayList<UserInfo> memberInfo = new ArrayList<UserInfo>();
 
     public MemberModifyFormFragment() {
         // Required empty public constructor
@@ -78,10 +84,12 @@ public class MemberModifyFormFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_member_modify_form, container, false);
 
+        main = (MainActivity)getActivity();
+
         member_db = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
         db_ref = member_db.getReference(); // DB 테이블 연결
 
-        login_user_info_Frag =new LoginUserInfoFragment();
+        login_user_info_Frag = new LoginUserInfoFragment();
 
         et_id_email = view.findViewById(R.id.et_id_email);
         et_pwd = view.findViewById(R.id.et_pwd);
@@ -92,6 +100,8 @@ public class MemberModifyFormFragment extends Fragment {
 
         btn_modify = view.findViewById(R.id.btn_modify);
         btn_cancel = view.findViewById(R.id.btn_cancel);
+
+        member_data();
 
         db_ref.child("Member").child(user_key).addValueEventListener(new ValueEventListener() {
             @Override
@@ -154,40 +164,37 @@ public class MemberModifyFormFragment extends Fragment {
                 }
 
                 Log.d(TAG, "디비조회");
-                db_ref.child("Member").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
 
-                            UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
-
-                            String check_user_key = dataSnapshot1.getKey();
-                            String check_tel = vo.getTel();
-                            if(check_tel.equals(tel) && !check_user_key.equals(user_key)){
-                                DialogSampleUtil.showMessageDialog(getContext(),"","이미 사용중인 전화번호 입니다.");
-                                et_tel.requestFocus();
-                                return;
-                            }
-
-                            //DB에 정보 업데이트
-                            vo.setPwd(pwd);
-                            vo.setName(name);
-                            vo.setNickname(nickname);
-                            vo.setTel(tel);
-
-                            db_ref.child("Member").setValue(vo);
-                            Log.d(TAG, "멤버 테이블에 수정");
-                            main.replaceFragment(login_user_info_Frag);
-                            Log.d(TAG, "기본정보화면으로 이동");
-                        }
+                boolean checkB =false;
+                for( UserInfo vo : memberInfo ){
+                    String check_user_key = vo.getUser_key();
+                    String check_tel = vo.getTel();
+                    if(check_tel.equals(tel) && !check_user_key.equals(user_key)){
+                        checkB= true;
+                        et_tel.requestFocus();
+                        break;
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    //DB에 정보 업데이트
+                    vo.setPwd(pwd);
+                    vo.setName(name);
+                    vo.setNickname(nickname);
+                    vo.setTel(tel);
 
-                    }
-                });
+                    db_ref.child("Member").child(user_key).setValue(vo);
+                    Log.d(TAG, "멤버 테이블에 수정");
+                }
+                if(checkB) {
+                    DialogSampleUtil.showMessageDialog(getContext(),"","이미 사용중인 전화번호 입니다.");
+                    return;
+                } else {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.main_frame, login_user_info_Frag.newInstance(user_key)).commit();
+                    Log.d(TAG, "기본정보화면으로 이동");
 
+                    Log.d("LLLL", "키값 :" + user_key);
+                }
             }
         });
 
@@ -200,5 +207,29 @@ public class MemberModifyFormFragment extends Fragment {
 
 
         return view;
+    }
+
+
+    public void member_data() {
+        //DB에서 id, pwd 일치하는 경우 로그인 페이지로 이동, 일치하지 않을 경우 다이얼로그 이용해서 알려주기
+        db_ref.child("Member").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
+                    vo.setUser_key(dataSnapshot1.getKey());
+
+                    memberInfo.add(vo);
+
+                    Log.d("LLLL", "입력값:" + vo.getId() + "/" + vo.getPwd() + "/" + vo.getName() + "/" +vo.getNickname() +"/"+ vo.getTel());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

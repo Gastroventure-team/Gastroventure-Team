@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.UserInfo;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +56,8 @@ public class MemberFindIdPwd extends Fragment {
     String check_pwd_name, check_pwd_id, check_pwd_tel;
 
     LayoutInflater  inflater;
+
+    private ArrayList<UserInfo> memberInfo = new ArrayList<UserInfo>();
 
     public MemberFindIdPwd() {
         // Required empty public constructor
@@ -88,6 +93,7 @@ public class MemberFindIdPwd extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        this.inflater = inflater;
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_member_find_id_pwd, container, false);
 
@@ -105,40 +111,33 @@ public class MemberFindIdPwd extends Fragment {
         et_find_pwd_tel = view.findViewById(R.id.et_find_pwd_tel);
         btn_find_pwd = view.findViewById(R.id.btn_find_pwd);
 
-        //아이디 찾기 입력값
-        find_id_name = et_find_id_name.getText().toString().trim();
-        find_id_tel = et_find_id_tel.getText().toString().trim();
-        //비밀번호 찾기 입력값
-        find_pwd_name = et_find_pwd_name.getText().toString().trim();
-        find_pwd_id = et_find_pwd_id.getText().toString().trim();
-        find_pwd_tel = et_find_pwd_tel.getText().toString().trim();
+        find_info();
 
         btn_find_id.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //DB에서 이름과 전화번호 검색 후 일치하는 아이디 다이얼로그로 띄워주기
-                db_ref.child("Member").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                            UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
 
-                            check_id_name = vo.getName();
-                            check_id_tel = vo.getTel();
+                //아이디 찾기 입력값
+                find_id_name = et_find_id_name.getText().toString().trim();
+                find_id_tel = et_find_id_tel.getText().toString().trim();
 
-                            if(check_id_name.equals(find_id_name) && check_id_tel.equals(find_id_tel)){
-                                String answer_id = vo.getId();
-                                DialogSampleUtil.showMessageDialog(getContext(),"","회원님의 아이디는 ["+answer_id+"] 입니다.");
-                                return;
-                            }
-                        }
+                if(find_id_name.isEmpty() || find_id_tel.isEmpty()){
+                    DialogSampleUtil.showMessageDialog(getContext(),"","이름 또는 전화번호를 입력해주세요.");
+                    return;
+                }
+
+
+                for( UserInfo check_id : memberInfo ){
+                    check_id_name = check_id.getName();
+                    check_id_tel = check_id.getTel();
+
+                    if(check_id_name.equals(find_id_name) && check_id_tel.equals(find_id_tel)){
+                        String answer_id = check_id.getId();
+                        DialogSampleUtil.showMessageDialog(getContext(),"","회원님의 아이디는 ["+answer_id+"] 입니다.");
+                        break;
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                }
 
             }
         });
@@ -147,29 +146,30 @@ public class MemberFindIdPwd extends Fragment {
             @Override
             public void onClick(View v) {
                 //DB에서 아이디, 이름, 전화번호 검색 후 일치하는 계정 비밀번호 재설정 진행
-                db_ref.child("Member").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                            UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
 
-                            check_pwd_id = vo.getId();
-                            check_pwd_name = vo.getName();
-                            check_pwd_tel = vo.getTel();
+                //비밀번호 찾기 입력값
+                find_pwd_name = et_find_pwd_name.getText().toString().trim();
+                find_pwd_id = et_find_pwd_id.getText().toString().trim();
+                find_pwd_tel = et_find_pwd_tel.getText().toString().trim();
 
-                            if(check_pwd_id.equals(find_pwd_id) && check_pwd_name.equals(find_pwd_name) && check_pwd_tel.equals(find_pwd_tel)){
-                                modify_pwd(vo);
-                            }
+                if(find_pwd_name.isEmpty() || find_pwd_id.isEmpty() || find_pwd_tel.isEmpty()){
+                    DialogSampleUtil.showMessageDialog(getContext(),"","이름, ID, 전화번호를 입력해주세요");
+                    return;
+                }
 
-                        }
+                for(UserInfo check_pwd : memberInfo){
+                    check_pwd_id  =  check_pwd.getId();
+                    check_pwd_name = check_pwd.getName();
+                    check_pwd_tel = check_pwd.getTel();
 
+                    if(check_pwd_id.equals(find_pwd_id) && check_pwd_name.equals(find_pwd_name) && check_pwd_tel.equals(find_pwd_tel)){
+                        modify_pwd(check_pwd);
+                        et_find_pwd_name.setText("");
+                        et_find_pwd_id.setText("");
+                        et_find_pwd_tel.setText("");
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
             }
         });
 
@@ -177,7 +177,29 @@ public class MemberFindIdPwd extends Fragment {
         return view;
     }
 
-    public void modify_pwd(UserInfo vo){
+    public void find_info(){
+        db_ref.child("Member").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                    UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
+                    vo.setUser_key(dataSnapshot1.getKey());
+
+                    memberInfo.add(vo);
+
+                    Log.d("LLLL", "아이디찾기:" + vo.getName() + "/" + vo.getTel() + "/" + vo.getUser_key());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void modify_pwd(final UserInfo vo){
 
         View view = inflater.inflate(R.layout.member_refactor_pwd,null);
 
@@ -193,10 +215,9 @@ public class MemberFindIdPwd extends Fragment {
                 String modify_pwd_check = et_modify_pwd_check.getText().toString().trim();
 
                 if(modify_pwd.equals(modify_pwd_check)){
-                    UserInfo vo = new UserInfo();
                     vo.setPwd(modify_pwd);
 
-                    db_ref.child("Member").setValue(vo);
+                    db_ref.child("Member").child(vo.getUser_key()).setValue(vo);
 
                     dialog.dismiss();
                 }
@@ -206,7 +227,6 @@ public class MemberFindIdPwd extends Fragment {
         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getActivity(), "취소.", Toast.LENGTH_SHORT).show();
                 dialog.cancel();
             }
         }).show();

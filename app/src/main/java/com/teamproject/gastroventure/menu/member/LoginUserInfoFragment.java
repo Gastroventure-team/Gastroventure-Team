@@ -87,20 +87,7 @@ public class LoginUserInfoFragment extends Fragment {
         btn_user_info = view.findViewById(R.id.btn_user_info);
         btn_dodge = view.findViewById(R.id.btn_dodge);
 
-        db_ref.child("Member").child(user_key).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                UserInfo vo = dataSnapshot.getValue(UserInfo.class);
-
-                tv_show_nickname.setText(vo.getNickname());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        setting_nickname();
 
         btn_user_info.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +111,7 @@ public class LoginUserInfoFragment extends Fragment {
                             try {
                                 db_ref.child("Member").child(user_key).removeValue();
                                 Log.d("LLLL", "회원삭제 완료");
+                                main.replaceFragment(logoutFrag);
                             } catch (Exception e){
                                 Log.d("LLLL", e.getMessage());
                             }
@@ -133,11 +121,28 @@ public class LoginUserInfoFragment extends Fragment {
                 //다이얼로그 이용해서 정말 삭제할건지 확인 후 삭제, 취소 선택
                 DialogSampleUtil.showConfirmDialog(getContext(),"","정말 회원탈퇴 하시겠습니까?", handler);
 
-                main.replaceFragment(modifyFrag);
+
 
             }
         });
 
         return view;
+    }
+    public void setting_nickname(){
+        db_ref.child("Member").child(user_key).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                UserInfo vo = dataSnapshot.getValue(UserInfo.class);
+
+                tv_show_nickname.setText(vo.getNickname());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }
