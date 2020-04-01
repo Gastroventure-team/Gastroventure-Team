@@ -40,7 +40,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ID" />
+                android:text="ID"
+                />
 
             <EditText
                 android:id="@+id/et_id"
@@ -48,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:ems="10"
+                android:inputType="textEmailAddress"
                 />
         </LinearLayout>
 

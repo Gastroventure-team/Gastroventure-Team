@@ -2,6 +2,7 @@ package com.teamproject.gastroventure.menu.member;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -12,12 +13,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.UserInfo;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,7 +32,7 @@ import com.teamproject.gastroventure.vo.UserInfo;
  */
 public class MemberRegisterFragment extends Fragment {
 
-    final String TAG = "member";
+    final String TAG = "LLLL";
 
     private FirebaseDatabase member_db;
     private DatabaseReference db_ref;
@@ -43,8 +49,8 @@ public class MemberRegisterFragment extends Fragment {
     private View view;
 
     //fragment_member_register 항목 변수 선언
-    EditText et_id,et_pwd,et_pwd_check,et_name,et_tel,et_nickname;
-    Button btn_submit,btn_cancel;
+    EditText et_id, et_pwd, et_pwd_check, et_name, et_tel, et_nickname;
+    Button btn_submit, btn_cancel;
 
     MainActivity main;
 
@@ -57,6 +63,9 @@ public class MemberRegisterFragment extends Fragment {
     String name;
     String nickname;
     String tel;
+
+    private ArrayList<UserInfo> member_list = new ArrayList<UserInfo>();
+    private ArrayList<UserInfo> tel_list = new ArrayList<UserInfo>();
 
     public MemberRegisterFragment() {
         // Required empty public constructor
@@ -99,19 +108,22 @@ public class MemberRegisterFragment extends Fragment {
         db_ref = member_db.getReference(); // DB 테이블 연결
         Log.d(TAG, "db연결");
 
+
         loginFrag = new MemberLoginFormFragment();
         logoutFrag = new LogoutUserInfoFragment();
-        main = (MainActivity)getActivity();
+        main = (MainActivity) getActivity();
 
-        et_id = view.findViewById(R.id.et_id);
+        et_id = view.findViewById(R.id.et_id_email);
         et_pwd = view.findViewById(R.id.et_pwd);
-        et_pwd_check= view.findViewById(R.id.et_pwd_check);
+        et_pwd_check = view.findViewById(R.id.et_pwd_check);
         et_name = view.findViewById(R.id.et_name);
         et_nickname = view.findViewById(R.id.et_nickname);
         et_tel = view.findViewById(R.id.et_tel);
 
         btn_submit = view.findViewById(R.id.btn_submit);
         btn_cancel = view.findViewById(R.id.btn_cancel);
+
+        memberData();
 
         //프래그먼트 이동
         btn_submit.setOnClickListener(new View.OnClickListener() {
@@ -121,50 +133,90 @@ public class MemberRegisterFragment extends Fragment {
 
                 //입력된 항목 값 읽어오기
                 id = et_id.getText().toString().trim();
-                Log.d(TAG, "id :"+id);
+                Log.d(TAG, "id :" + id);
                 pwd = et_pwd.getText().toString().trim();
                 pwd_check = et_pwd_check.getText().toString().trim();
                 name = et_name.getText().toString().trim();
-                nickname = et_name.getText().toString().trim();
+                nickname = et_nickname.getText().toString().trim();
                 tel = et_tel.getText().toString().trim();
 
-                if(id.isEmpty()){
-                    Toast.makeText(getContext(),"이메일 형식의 아이디를 입력해주세요",Toast.LENGTH_SHORT).show();
-                }
-                if(pwd.isEmpty()){
-                    Toast.makeText(getContext(),"비밀번호를 입력해주세요",Toast.LENGTH_SHORT).show();
-                }
-                if(pwd_check.isEmpty()){
-                    Toast.makeText(getContext(),"비밀번호를 한번 더 입력해주세요",Toast.LENGTH_SHORT).show();
-                }
-                if(name.isEmpty()){
-                    Toast.makeText(getContext(),"이름을 입력해주세요",Toast.LENGTH_SHORT).show();
-                }
-                if(nickname.isEmpty()){
-                    Toast.makeText(getContext(),"닉네임을 입력해주세요",Toast.LENGTH_SHORT).show();
-                }
-                if(tel.isEmpty()){
-                    Toast.makeText(getContext(),"연락처를 입력해주세요",Toast.LENGTH_SHORT).show();
-                }
-
-                //비밀번호 확인
-                if(!pwd_check.equals(pwd)){
-                    //비밀번호 확인했을 때 같지않을 경우
-                    DialogSampleUtil.showMessageDialog(getContext(),"","비밀번호가 일치하지 않습니다. 다시 확인해주세요");
-                    et_pwd_check.setText("");
-                    et_pwd_check.requestFocus();
-
+                if (id.isEmpty()) {
+                    Toast.makeText(getContext(), "이메일 형식의 아이디를 입력해주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //DB로 인서트
-                UserInfo vo = new UserInfo();
-                vo.setId(id);
-                vo.setPwd(pwd);
-                vo.setName(name);
-                vo.setNickname(nickname);
-                vo.setTel(tel);
+                if (pwd.isEmpty()) {
+                    Toast.makeText(getContext(), "비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (pwd_check.isEmpty()) {
+                    Toast.makeText(getContext(), "비밀번호를 한번 더 입력해주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (name.isEmpty()) {
+                    Toast.makeText(getContext(), "이름을 입력해주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (nickname.isEmpty()) {
+                    Toast.makeText(getContext(), "닉네임을 입력해주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (tel.isEmpty()) {
+                    Toast.makeText(getContext(), "연락처를 입력해주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                db_ref.child("Member").push().setValue(vo);
+                //비밀번호 재확인 정상작동
+                //비밀번호 확인
+                if (!pwd_check.equals(pwd)) {
+                    //비밀번호 확인했을 때 같지않을 경우
+                    //DialogSampleUtil.showMessageDialog(getContext(),"","비밀번호가 일치하지 않습니다. 다시 확인해주세요");
+                    Toast.makeText(getContext(), "비밀번호가 일치하지 않습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                    et_pwd_check.setText("");
+                    et_pwd_check.requestFocus();
+                    return;
+                }
+
+                if(!member_list.isEmpty()) {
+
+                    for (UserInfo check_id : member_list) {
+                        Log.d(TAG, "if전 사용중 아이디 비번 확인 :" + check_id.getId());
+                        if ((check_id.getId()).equals(id)) {
+                            //여기서 에러
+                            DialogSampleUtil.showMessageDialog(getContext(), "", "이미 사용중인 아이디 입니다.");
+                            et_id.setText("");
+                            et_id.requestFocus();
+                            return;
+                        }
+                    }
+
+                    for (UserInfo check_tel : tel_list) {
+                        Log.d(TAG, "if전 사용중 전화번호 확인 :" + check_tel.getTel());
+                        if ((check_tel.getTel()).equals(tel)) {
+                            DialogSampleUtil.showMessageDialog(getContext(), "", "이미 사용중인 전화번호 입니다.");
+                            et_tel.setText("");
+                            et_tel.requestFocus();
+                            return;
+                        }
+                    }
+                }
+
+
+                //datasnapshot 안에서는 안들어가짐
+
+                //DB로 인서트
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(id);
+                userInfo.setPwd(pwd);
+                userInfo.setName(name);
+                userInfo.setNickname(nickname);
+                userInfo.setTel(tel);
+
+                Log.d(TAG, "정보확인 :" + id + "/" + pwd + "/" + name + "/" + nickname + "/" + tel);
+
+                db_ref.child("Member").push().setValue(userInfo);
+
+                Log.d(TAG, "member 테이블에 입력 끝");
+                Toast.makeText(getContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                 main.replaceFragment(loginFrag);
             }
@@ -178,5 +230,25 @@ public class MemberRegisterFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void memberData() {
+        db_ref.child("Member").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    UserInfo vo = dataSnapshot1.getValue(UserInfo.class);
+                    vo.setUser_key(dataSnapshot1.getKey());
+
+                    member_list.add(vo);
+                    Log.d("LLLL", vo.getName() + " / " + vo.getTel());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("LLLL", "데이터 로딩 오류!!!!!!");
+            }
+        });
     }
 }

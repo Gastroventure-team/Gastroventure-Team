@@ -41,7 +41,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
 
     @Override
     public void onBindViewHolder(@NonNull BoardViewHolder holder, final int position) {
-        holder.board_num.setText(String.valueOf(arrayList.get(position).getBoard_num()));
+        holder.board_num.setText(String.valueOf(holder.getAdapterPosition()+1));
         holder.board_title.setText(arrayList.get(position).getBoard_title());
         holder.board_date.setText(arrayList.get(position).getBoard_date());
 

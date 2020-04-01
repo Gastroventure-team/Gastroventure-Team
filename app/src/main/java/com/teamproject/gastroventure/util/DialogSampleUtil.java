@@ -40,8 +40,8 @@ public class DialogSampleUtil {
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("닫기",null);
-        AlertDialog dalog=builder.create();
-        dalog.show();
+        AlertDialog dialog=builder.create();
+        dialog.show();
     }
 
     //키패드 내리기

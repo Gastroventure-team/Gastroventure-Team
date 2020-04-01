@@ -13,10 +13,19 @@ public class SearchVo {
     String phone;
     String category_name;
     String category_group_name;
+    String category_group_code;
 
     double latitude;
     double longitude;
     int    distance;
+
+    public String getCategory_group_code() {
+        return category_group_code;
+    }
+
+    public void setCategory_group_code(String category_group_code) {
+        this.category_group_code = category_group_code;
+    }
 
     public String getPlace_name() {
         return place_name;
