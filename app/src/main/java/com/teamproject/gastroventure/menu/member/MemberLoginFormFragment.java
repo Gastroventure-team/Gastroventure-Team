@@ -159,11 +159,9 @@ public class MemberLoginFormFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 save_id_check_ok = ((CheckBox) v).isChecked();
-                if(save_id_check_ok){
+                if(save_id_check_ok) {
                     LoginSharedPreference.setChecked(getContext(), IS_CHECKED, save_id_check_ok);
-                }
-
-                else { // 체크가 해제되면 저장된 아이디를 해제하고 저장되어있던 체크박스의 상태여부도 초기화한다.
+                }else { // 체크가 해제되면 저장된 아이디를 해제하고 저장되어있던 체크박스의 상태여부도 초기화한다.
                     LoginSharedPreference.removeAttribute(getContext(), SAVE_ID);
                     LoginSharedPreference.removeChecked(getContext(), IS_CHECKED);
                 }
@@ -211,6 +209,23 @@ public class MemberLoginFormFragment extends Fragment {
                 }
 
                 if(checkB) {
+                    // 아이디 저장 체크
+                    if(save_id_check_ok) {
+                        //아이디 저장
+                        LoginSharedPreference.setAttribute(getContext(), SAVE_ID ,et_id.getText().toString());
+                    }
+
+                    // 자동로그인 체크
+                    if(auto_isCheck) {
+                        // 자동로그인 저장
+                        LoginSharedPreference.setAttribute(getContext(), AUTO_ID, id);
+                    }
+
+                    LoginSharedPreference.setAttribute(getContext(), LOGIN_ID, id);
+
+                    et_id.setText("");
+                    et_pwd.setText("");
+
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.replace(R.id.main_frame, login_userFrag.newInstance(user_key)).commit();
@@ -218,6 +233,8 @@ public class MemberLoginFormFragment extends Fragment {
                     Log.d("LLLL", "키값 :" + user_key);
                 } else {
                     DialogSampleUtil.showMessageDialog(getContext(), "", "아이디 또는 비밀번호가 일치하지 않습니다.");
+                    et_id.setText("");
+                    et_pwd.setText("");
                     return;
                 }
             }
