@@ -2,7 +2,6 @@ package com.teamproject.gastroventure;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -11,6 +10,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -19,10 +19,13 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.teamproject.gastroventure.event.ActivityResultEvent;
 import com.teamproject.gastroventure.menu.board.BoardFragment;
+import com.teamproject.gastroventure.menu.member.LoginUserInfoFragment;
 import com.teamproject.gastroventure.menu.member.LogoutUserInfoFragment;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
 import com.teamproject.gastroventure.menu.review.ReviewFragment;
 import com.teamproject.gastroventure.menu.SearchFragment;
 import com.teamproject.gastroventure.util.BusProvider;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 
 import java.util.ArrayList;
 
@@ -40,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private SearchFragment searchFragment;
     private BoardFragment boardFragment;
     private LogoutUserInfoFragment logoutUserInfoFragment;
+
+    private LoginUserInfoFragment loginUserInfoFragment;
 
     private long time = 0;
 
@@ -77,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         searchFragment = new SearchFragment();
         boardFragment = new BoardFragment();
         logoutUserInfoFragment = new LogoutUserInfoFragment();
+
+        loginUserInfoFragment = new LoginUserInfoFragment();
+
         setFrag(0); // 첫 프래그먼트 화면을 무엇으로 지정해줄 것인지 선택.
 
     }
@@ -106,8 +114,14 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
             case 3:
-                ft.replace(R.id.main_frame, logoutUserInfoFragment);
-                ft.commit();
+                //로그인폼에서 LoginSharedPreference에 저장한 값이 있으면
+                if( LoginSharedPreference.getAttribute(getApplication(), MemberLoginFormFragment.AUTO_ID).length() == 0){
+                    ft.replace(R.id.main_frame, logoutUserInfoFragment);
+                    ft.commit();
+                }else{
+                    ft.replace(R.id.main_frame, loginUserInfoFragment);
+                    ft.commit();
+                }
                 break;
         }
     }
