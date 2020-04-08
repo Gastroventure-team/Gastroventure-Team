@@ -136,7 +136,7 @@ public class SearchUtil {
         //String  kakaoAK = "KakaoAK 3ebe1c7e586491e37bc04090f8d133b0";
         keyword = URLEncoder.encode(keyword, "utf-8");
         String  kakaoAK = MyOpenAPIKey.Daum.KAKAOAK;
-        String urlStr = String.format("https://dapi.kakao.com/v2/local/search/category.xml?category_group_code=%s&query=%s&x=%f&y=%f&radius=%d&page=%d&size=%d",
+        String urlStr = String.format("https://dapi.kakao.com/v2/local/search/keyword.xml?category.xml?category_group_code=%s&query=%s&x=%f&y=%f&radius=%d&page=%d&size=%d",
                 "FD6",keyword,longitude,latitude,radius,page,size
         );
 

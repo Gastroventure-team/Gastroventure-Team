@@ -1,5 +1,6 @@
 package com.teamproject.gastroventure.menu.member;
 
+import android.content.Intent;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
@@ -8,6 +9,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.UserInfo;
 
 public class LoginUserInfoFragment extends Fragment {
@@ -126,6 +131,9 @@ public class LoginUserInfoFragment extends Fragment {
             }
         });
 
+        // 프래그먼트가 옵션 메뉴를 가질수 있도록 설정
+        setHasOptionsMenu(true);
+
         return view;
     }
     public void setting_nickname(){
@@ -143,6 +151,27 @@ public class LoginUserInfoFragment extends Fragment {
 
             }
         });
+    }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.logout_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.menu_logout:
+                // 자동 로그인 체크, 로그인 정보 삭제
+                LoginSharedPreference.removeAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID);
+                LoginSharedPreference.removeAttribute(getContext(), MemberLoginFormFragment.AUTO_ID);
+
+                main.replaceFragment(logoutFrag);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
