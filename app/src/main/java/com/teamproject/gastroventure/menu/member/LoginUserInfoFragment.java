@@ -70,6 +70,24 @@ public class LoginUserInfoFragment extends Fragment {
     MemberModifyFormFragment modifyFrag;
     LogoutUserInfoFragment logoutFrag;
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.btn_logout:
+                main.replaceFragment();
+                return true;
+
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,6 +100,7 @@ public class LoginUserInfoFragment extends Fragment {
         modifyFrag = new MemberModifyFormFragment();
         logoutFrag = new LogoutUserInfoFragment();
 
+
         //등급별 이미지뷰
         civ_rank = view.findViewById(R.id.civ_rank);
         //닉네임, 등급, 작성게시물수 텍스트뷰
@@ -91,6 +110,8 @@ public class LoginUserInfoFragment extends Fragment {
         // 정보수정, 회원탈퇴 버튼
         btn_user_info = view.findViewById(R.id.btn_user_info);
         btn_dodge = view.findViewById(R.id.btn_dodge);
+
+
 
         setting_nickname();
 
