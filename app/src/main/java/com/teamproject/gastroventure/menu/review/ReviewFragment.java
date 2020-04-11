@@ -34,7 +34,9 @@ import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewAdapter;
 import com.teamproject.gastroventure.datainterface.DataInterface;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.ReviewImgVo;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
@@ -88,7 +90,11 @@ public class ReviewFragment extends Fragment implements DataInterface {
         insert_fbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                main.replaceFragment(new ReviewInsertFragment());
+                if(LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.USER_KEY).isEmpty()){
+                    DialogSampleUtil.showMessageDialog(getContext(), "", "로그인을 해야 리뷰 작성이 가능합니다.\n로그인 해 주시기 바랍니다.");
+                } else {
+                    main.replaceFragment(new ReviewInsertFragment());
+                }
             }
         });
 
@@ -107,10 +113,15 @@ public class ReviewFragment extends Fragment implements DataInterface {
                     snapshot.getKey();
                     ReviewVo reviewVo = snapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
                     reviewVo.setReview_key(snapshot.getKey());
+
+                    String user = reviewVo.getWrite_user().substring(0,3) + "****";
+                    reviewVo.setWrite_user(user);
+
                     reviewList.add(reviewVo); // 담은 데이터들을 배열리스트에 넣고 리사이클러뷰로 보낼 준비
 
                     Log.d(TAG, " 메뉴이름! " + reviewVo.getMenu());
                     Log.d(TAG, " 리뷰 키! " + reviewVo.getReview_key());
+                    Log.d(TAG, " 리뷰 작성자! " + reviewVo.getWrite_user());
                 }
                 reviewAdapter.notifyDataSetChanged(); // 리스트 저장 및 새로고침
             }

@@ -2,6 +2,7 @@
     <string name="app_name">Gastroventure</string>
     <string name="review_store_name">상호명</string>
     <string name="review_menu">메뉴</string>
+    <string name="review_writer">작성자</string>
 
     <string name="store_name">상점이름</string>
     <string name="menu">메뉴</string>

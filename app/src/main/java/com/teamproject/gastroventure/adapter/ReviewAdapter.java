@@ -52,6 +52,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
         Glide.with(holder.itemView)
                 .load(reviewList.get(position).getMenu_image())
                 .into(holder.review_img);
+        holder.review_writer.setText(reviewList.get(position).getWrite_user());
         holder.review_store_name.setText(reviewList.get(position).getStore_name());
         holder.review_menu.setText(reviewList.get(position).getMenu());
         holder.review_rating.setRating((float) reviewList.get(position).getRating_num());
@@ -64,6 +65,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
 
     public class BoardViewHolder extends RecyclerView.ViewHolder {
         ImageView review_img;
+        TextView review_writer;
         TextView review_store_name;
         TextView review_menu;
         RatingBar review_rating;
@@ -72,6 +74,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
             super(itemView);
 
             this.review_img = itemView.findViewById(R.id.iv_review_image);
+            this.review_writer = itemView.findViewById(R.id.tv_review_writer);
             this.review_store_name = itemView.findViewById(R.id.tv_review_store_name);
             this.review_menu = itemView.findViewById(R.id.tv_review_menu);
             this.review_rating = itemView.findViewById(R.id.review_list_rating);

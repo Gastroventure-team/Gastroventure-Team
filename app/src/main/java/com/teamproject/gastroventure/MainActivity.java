@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //tedPermission();
+        tedPermission();
 
         //하단 네비게이션 바
         bottomNavigationView = findViewById(R.id.bottomNavi);

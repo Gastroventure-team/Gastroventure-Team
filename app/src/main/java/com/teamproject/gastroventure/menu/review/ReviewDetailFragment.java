@@ -25,6 +25,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewDetailImgAdapter;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.ReviewImgVo;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
@@ -65,6 +68,7 @@ public class ReviewDetailFragment extends Fragment {
     private ReviewImgVo reviewImgVo;
 
     private String select_key;
+    private String user_id;
 
     public ReviewDetailFragment() {
     }
@@ -112,9 +116,13 @@ public class ReviewDetailFragment extends Fragment {
         detail_modify_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.main_frame, ReviewModifyFragment.newInstance(select_key)).commit();
+                if(user_id.equals(LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID))) {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.main_frame, ReviewModifyFragment.newInstance(select_key)).commit();
+                } else {
+                    DialogSampleUtil.showMessageDialog(getContext(), "", "작성자만 수정 가능합니다.");
+                }
             }
         });
 
@@ -141,6 +149,7 @@ public class ReviewDetailFragment extends Fragment {
                 detail_store_name.setText(reviewVo.getStore_name());
                 detail_menu.setText(reviewVo.getMenu());
                 detail_content.setText(reviewVo.getReview_content());
+                user_id = reviewVo.getWrite_user();
 
                 detail_review_rating.setRating((float) reviewVo.getRating_num());
             }

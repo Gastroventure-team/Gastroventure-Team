@@ -10,6 +10,7 @@ public class ReviewVo {
     public double rating_num;
     public String menu_image;
     public String review_content;
+    public String write_user;
 
     public ReviewVo() {
     }
@@ -60,5 +61,13 @@ public class ReviewVo {
 
     public void setReview_content(String review_content) {
         this.review_content = review_content;
+    }
+
+    public String getWrite_user() {
+        return write_user;
+    }
+
+    public void setWrite_user(String write_user) {
+        this.write_user = write_user;
     }
 }

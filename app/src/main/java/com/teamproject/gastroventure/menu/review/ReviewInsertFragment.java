@@ -42,8 +42,10 @@ import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.ReviewInsertImgAdapter;
 import com.teamproject.gastroventure.datainterface.DataImgInterface;
 import com.teamproject.gastroventure.event.ActivityResultEvent;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
 import com.teamproject.gastroventure.util.BusProvider;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.ReviewImgVo;
 import com.teamproject.gastroventure.vo.ReviewVo;
 
@@ -167,12 +169,16 @@ public class ReviewInsertFragment extends Fragment implements DataImgInterface {
                 }
 
                 ReviewVo reviewVo = new ReviewVo();
+                String user_id = LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID);
 
                 reviewVo.setStore_name(store_name);
                 reviewVo.setMenu(menu);
                 reviewVo.setReview_content(review_content);
                 reviewVo.setRating_num(rating_num);
-                reviewVo.setMenu_image(imgUriList.get(0).toString());
+                if(!imgUriList.isEmpty()) {
+                    reviewVo.setMenu_image(imgUriList.get(0).toString());
+                }
+                reviewVo.setWrite_user(user_id);
 
                 String review_key = databaseReference.push().getKey();
 
@@ -413,6 +419,7 @@ public class ReviewInsertFragment extends Fragment implements DataImgInterface {
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {//Yes
                     String fileName = imgNameList.get(position);
+                    imgUriList.remove(position);
                     imgNameList.remove(position);
                     reviewImageList.remove(position);
 
