@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private LogoutUserInfoFragment logoutUserInfoFragment;
 
     private LoginUserInfoFragment loginUserInfoFragment;
+    private MemberLoginFormFragment memberLoginFormFragment;
 
     private long time = 0;
 
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
         loginUserInfoFragment = new LoginUserInfoFragment();
 
+        memberLoginFormFragment = new MemberLoginFormFragment();
+
         setFrag(0); // 첫 프래그먼트 화면을 무엇으로 지정해줄 것인지 선택.
 
     }
@@ -95,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.main_frame, fragment).commit();
     }
+
+
+    String user_key ="";
 
     // 프래그먼트 교체가 일어나는 실행문이다.
     private void setFrag(int n) {
@@ -114,13 +120,32 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
             case 3:
-                //로그인폼에서 LoginSharedPreference에 저장한 값이 있으면
+
+                Log.d("LLLL", "메인 액티비티에서 값확인: "+LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.AUTO_ID).length()+"/"+LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.USER_KEY)+"/");
+
+                //로그인폼에서 자동로그인 LoginSharedPreference에 저장한 값이 없으면
                 if( LoginSharedPreference.getAttribute(getApplication(), MemberLoginFormFragment.AUTO_ID).length() == 0){
-                    ft.replace(R.id.main_frame, logoutUserInfoFragment);
-                    ft.commit();
-                }else{
-                    ft.replace(R.id.main_frame, loginUserInfoFragment);
-                    ft.commit();
+                    //유저키 값이 없으면
+                    if(LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.USER_KEY).length() ==0 ) {
+                        ft.replace(R.id.main_frame, logoutUserInfoFragment);
+                        ft.commit();
+                    }else { //유저키 값이 있다면 (로그인 되어있다면 유저 키값 있음)
+                        user_key = LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.USER_KEY);
+                        ft.replace(R.id.main_frame, loginUserInfoFragment.newInstance(user_key)).commit();
+                    }
+                }else{ //자동로그인 설정되어있으면
+
+                    // USER_KEY에 키값이 저장되어있으면
+                    if(LoginSharedPreference.getAttribute(getApplication(), MemberLoginFormFragment.USER_KEY).length() == 0){
+                        Toast.makeText(getApplicationContext(),"유저 키값이 없음. 재로그인 바람",Toast.LENGTH_SHORT).show();
+                        ft.replace(R.id.main_frame, memberLoginFormFragment);
+                        ft.commit();
+
+                    }else{
+                        user_key = LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.USER_KEY);
+
+                        ft.replace(R.id.main_frame, loginUserInfoFragment.newInstance(user_key)).commit();
+                    }
                 }
                 break;
         }

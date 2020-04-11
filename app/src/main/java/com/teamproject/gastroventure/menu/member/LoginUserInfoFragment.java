@@ -169,6 +169,7 @@ public class LoginUserInfoFragment extends Fragment {
                 // 자동 로그인 체크, 로그인 정보 삭제
                 LoginSharedPreference.removeAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID);
                 LoginSharedPreference.removeAttribute(getContext(), MemberLoginFormFragment.AUTO_ID);
+                LoginSharedPreference.removeAttribute(getContext(),MemberLoginFormFragment.USER_KEY);
 
                 main.replaceFragment(logoutFrag);
                 return true;

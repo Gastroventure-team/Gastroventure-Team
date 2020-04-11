@@ -44,7 +44,7 @@ public class MemberLoginFormFragment extends Fragment {
     public static final String LOGIN_ID = "login";           // 로그인 정보를 저장하기 위한 상수. 이후 다른 페이지에서도 쓰임
     private static final String IS_CHECKED = "isChecked";    // 아이디 저장 체크박스의 체크여부를 저장하기 위한 상수
 
-    private static final String USER_KEY = "user_key";
+    public static final String USER_KEY = "user_key";
 
     public static MemberLoginFormFragment newInstance() {
         return new MemberLoginFormFragment();
@@ -199,9 +199,14 @@ public class MemberLoginFormFragment extends Fragment {
                         if (check_pwd.equals(pwd)) {
                             user_key = user.getUser_key();
 
+                            Log.d("LLLL", "로그인 폼 user_key:"+user_key);
+
+                            LoginSharedPreference.setAttribute(getContext(), USER_KEY, user_key);
+
+                            Log.d("LLLL", "프리퍼런스 저장 확인:"+ LoginSharedPreference.getAttribute(getContext(),MemberLoginFormFragment.USER_KEY));
+
                             checkB = true;
 
-                            Log.d("LLLL", "비교입력값:" + id + "/" + pwd + "비교체크값:" + check_id + "/" + check_pwd);
                             break;
                         } else {
                             checkB = false;
@@ -225,8 +230,6 @@ public class MemberLoginFormFragment extends Fragment {
                     }
 
                     LoginSharedPreference.setAttribute(getContext(), LOGIN_ID, id);
-                    LoginSharedPreference.setAttribute(getContext(), USER_KEY, user_key);
-
 
                     et_id.setText("");
                     et_pwd.setText("");
