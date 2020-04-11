@@ -1,9 +1,5 @@
 package com.teamproject.gastroventure.menu.member;
 
-import android.content.Intent;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +29,7 @@ import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.util.LoginSharedPreference;
+import com.teamproject.gastroventure.vo.ReviewVo;
 import com.teamproject.gastroventure.vo.UserInfo;
 
 public class LoginUserInfoFragment extends Fragment {
@@ -93,9 +90,7 @@ public class LoginUserInfoFragment extends Fragment {
         btn_user_info = view.findViewById(R.id.btn_user_info);
         btn_dodge = view.findViewById(R.id.btn_dodge);
 
-
-
-        setting_nickname();
+        setting_review_info();
 
         btn_user_info.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,14 +132,54 @@ public class LoginUserInfoFragment extends Fragment {
 
         return view;
     }
-    public void setting_nickname(){
+
+    // 등급별 이미지, 등급, 닉네임
+    public void setting_review_info(){
         db_ref.child("Member").child(user_key).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 UserInfo vo = dataSnapshot.getValue(UserInfo.class);
-
+                //닉네임 세팅
                 tv_show_nickname.setText(vo.getNickname());
+
+                String review_id = vo.getId();
+                Log.d("LLLL", "리뷰쓴 아이디 : "+review_id);
+
+                db_ref.child("Review").orderByChild("write_user").equalTo(review_id).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        int count = (int) dataSnapshot.getChildrenCount();
+                        Log.d("LLLL", "카운트 :"+count);
+                        String review_count = Integer.toString(count);
+                        int review_rank = count;
+
+                        //리뷰 수 표시
+                        tv_writen_review.setText("작성한 리뷰 ("+review_count+")");
+
+                        //이미지, 등급 표시
+                        if(review_rank==0){
+                            tv_grade.setText("언랭크");
+                            civ_rank.setImageResource(R.drawable.rank_unrank);
+                        }else if(review_rank>0 && review_rank<=5){
+                            tv_grade.setText("브론즈");
+                            civ_rank.setImageResource(R.drawable.rank_bronze);
+                        }else if(review_rank>5 && review_rank<=15){
+                            tv_grade.setText("실버");
+                            civ_rank.setImageResource(R.drawable.rank_silver);
+                        }else if(review_rank>15 && review_rank<=50){
+                            tv_grade.setText("골드");
+                            civ_rank.setImageResource(R.drawable.rank_gold);
+                        }else if(review_rank>50){
+                            tv_grade.setText("VIP");
+                            civ_rank.setImageResource(R.drawable.rank_vip);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
