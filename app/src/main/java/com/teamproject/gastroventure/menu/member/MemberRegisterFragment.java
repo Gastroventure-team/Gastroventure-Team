@@ -200,9 +200,6 @@ public class MemberRegisterFragment extends Fragment {
                     }
                 }
 
-
-                //datasnapshot 안에서는 안들어가짐
-
                 //DB로 인서트
                 UserInfo userInfo = new UserInfo();
                 userInfo.setId(id);
