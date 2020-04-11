@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,10 +23,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.UserInfo;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 
 /**
@@ -56,6 +62,10 @@ public class MemberFindIdPwd extends Fragment {
     String check_pwd_name, check_pwd_id, check_pwd_tel;
 
     LayoutInflater  inflater;
+
+    MainActivity main;
+
+    MemberLoginFormFragment loginFrag;
 
     private ArrayList<UserInfo> memberInfo = new ArrayList<UserInfo>();
 
@@ -97,6 +107,9 @@ public class MemberFindIdPwd extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_member_find_id_pwd, container, false);
 
+        main = (MainActivity)getActivity();
+        loginFrag = new MemberLoginFormFragment();
+
         member_db = FirebaseDatabase.getInstance(); // 파이어베이스 데이터베이스 연동
         db_ref = member_db.getReference(); // DB 테이블 연결
 
@@ -136,6 +149,9 @@ public class MemberFindIdPwd extends Fragment {
                         String answer_id = check_id.getId();
                         DialogSampleUtil.showMessageDialog(getContext(),"","회원님의 아이디는 ["+answer_id+"] 입니다.");
                         break;
+                    }else {
+                        DialogSampleUtil.showMessageDialog(getContext(),"","입력정보와 일치하는 계정이 없습니다.");
+                        break;
                     }
                 }
 
@@ -167,12 +183,17 @@ public class MemberFindIdPwd extends Fragment {
                         et_find_pwd_name.setText("");
                         et_find_pwd_id.setText("");
                         et_find_pwd_tel.setText("");
+                    }else {
+                        DialogSampleUtil.showMessageDialog(getContext(),"","입력정보와 일치하는 계정이 없습니다.");
+                        break;
                     }
                 }
 
             }
         });
 
+        // 프래그먼트가 옵션 메뉴를 가질수 있도록 설정
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -231,5 +252,23 @@ public class MemberFindIdPwd extends Fragment {
             }
         }).show();
 
+    }
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.move_login_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.menu_move_login:
+                // 로그인 화면으로 이동
+                main.replaceFragment(loginFrag);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
