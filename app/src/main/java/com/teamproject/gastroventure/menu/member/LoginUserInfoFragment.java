@@ -70,24 +70,6 @@ public class LoginUserInfoFragment extends Fragment {
     MemberModifyFormFragment modifyFrag;
     LogoutUserInfoFragment logoutFrag;
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        inflater.inflate(R.menu.menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.btn_logout:
-                main.replaceFragment();
-                return true;
-
-        }
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -147,9 +129,7 @@ public class LoginUserInfoFragment extends Fragment {
                 //다이얼로그 이용해서 정말 삭제할건지 확인 후 삭제, 취소 선택
                 DialogSampleUtil.showConfirmDialog(getContext(),"","정말 회원탈퇴 하시겠습니까?", handler);
 
-
-
-            }
+           }
         });
 
         // 프래그먼트가 옵션 메뉴를 가질수 있도록 설정
