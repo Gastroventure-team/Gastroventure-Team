@@ -195,4 +195,17 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        //자동로그인이 체크 되어있지 않다면
+        if( LoginSharedPreference.getAttribute(getApplication(), MemberLoginFormFragment.AUTO_ID).length() == 0){
+            //유저키 값이 있을때 지워주기
+            if(LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.USER_KEY).length() !=0 ) {
+                LoginSharedPreference.removeAttribute(getApplication(),MemberLoginFormFragment.USER_KEY);
+            }
+            Log.d("LLLL", "onDestroy: 유저키 지워보자" + LoginSharedPreference.getAttribute(getApplication(),MemberLoginFormFragment.USER_KEY));
+        }
+        super.onDestroy();
+    }
 }
