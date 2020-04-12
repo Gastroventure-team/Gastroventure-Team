@@ -34,6 +34,8 @@ public class BoardDetailFragment extends Fragment {
     private Button detail_cancle_btn;
     private BoardVo boardVo;
     private MainActivity mainActivity;
+    private String user_id;
+
 
     private static final String SELECT_KEY = "select_key";
 
@@ -108,6 +110,7 @@ public class BoardDetailFragment extends Fragment {
 
                     board_detail_title.setText(boardVo.getBoard_title());
                     board_detail_content.setText(boardVo.getBoard_content());
+                    //user_id = boardVo.getWrite_user();
 
             }
             //DB를 가져오던중 에러 발생할경우

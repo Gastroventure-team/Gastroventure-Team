@@ -93,6 +93,7 @@ public class BoardFragment extends Fragment implements DataInterface {
                     BoardVo boardVo = snapshot.getValue(BoardVo.class);
                     boardVo.setBoard_key(snapshot.getKey());
 
+                    writeUserList.add(boardVo.getWrite_user());
                     String writer = boardVo.getWrite_user().substring(0,3) + "****";
                     boardVo.setWrite_user(writer);
 
