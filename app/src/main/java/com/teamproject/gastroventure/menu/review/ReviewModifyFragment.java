@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -237,7 +239,9 @@ public class ReviewModifyFragment extends Fragment implements DataImgInterface {
         btn_review_modify_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                main.replaceFragment(new ReviewFragment());
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.main_frame, ReviewDetailFragment.newInstance(select_key)).commit();
             }
         });
 
