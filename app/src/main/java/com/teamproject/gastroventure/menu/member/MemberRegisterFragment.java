@@ -24,6 +24,8 @@ import com.teamproject.gastroventure.util.DialogSampleUtil;
 import com.teamproject.gastroventure.vo.UserInfo;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -165,6 +167,12 @@ public class MemberRegisterFragment extends Fragment {
                     return;
                 }
 
+                if(isValidEmail(id) == false){
+                    Toast.makeText(getContext(), "이메일 형식의 아이디를 입력해주세요", Toast.LENGTH_SHORT).show();
+                    et_id.requestFocus();
+                    return;
+                }
+
                 //비밀번호 재확인 정상작동
                 //비밀번호 확인
                 if (!pwd_check.equals(pwd)) {
@@ -249,5 +257,16 @@ public class MemberRegisterFragment extends Fragment {
                 Log.d("LLLL", "데이터 로딩 오류!!!!!!");
             }
         });
+    }
+
+    //ID - email형식 확인 (정규식)
+    public static boolean isValidEmail(String email) {
+        boolean err = false; String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(email);
+        if(m.matches()) {
+            err = true;
+        }
+        return err;
     }
 }
