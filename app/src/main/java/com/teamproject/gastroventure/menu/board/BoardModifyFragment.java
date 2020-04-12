@@ -131,18 +131,18 @@ public class BoardModifyFragment extends Fragment {
         return view;
     }
     public void dataRead(){
-        databaseReference.child("Board").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("Board").child(select_key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             //FireBase Database의 데이터를 받아오는곳
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    BoardVo boardVo = snapshot.getValue(BoardVo.class);
+
+                    BoardVo boardVo = dataSnapshot.getValue(BoardVo.class);
                     boardVo.setBoard_key(dataSnapshot.getKey());
                     board_num_int = boardVo.getBoard_num();
 
                     board_modify_title.setText(boardVo.getBoard_title());
                     board_modify_content.setText(boardVo.getBoard_content());
-                }
+
             }
             //DB를 가져오던중 에러 발생할경우
             @Override
