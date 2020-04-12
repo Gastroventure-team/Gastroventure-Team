@@ -91,7 +91,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.BoardViewH
                 @Override
                 public boolean onLongClick(View v) {
                     String key = reviewList.get(getAdapterPosition()).getReview_key();
-                    dataInterface.dataRemove(key);
+                    dataInterface.dataRemove(key, getAdapterPosition());
                     return false;
                 }
             });

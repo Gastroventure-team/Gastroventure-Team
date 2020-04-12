@@ -75,7 +75,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
                 @Override
                 public boolean onLongClick(View v) {
                     String key = arrayList.get(getAdapterPosition()).getBoard_key();
-                    dataInterface.dataRemove(key);
+                    dataInterface.dataRemove(key, getAdapterPosition());
                     return false;
                 }
             });

@@ -1,7 +1,5 @@
 package com.teamproject.gastroventure.menu.review;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,15 +50,13 @@ public class ReviewFragment extends Fragment implements DataInterface {
     private RecyclerView.Adapter reviewAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<ReviewVo> reviewList = new ArrayList<ReviewVo>();
+    private ArrayList<String> writeUserList = new ArrayList<String>();
 
     private FirebaseDatabase reviewDatabase;
     private DatabaseReference databaseReference;
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
-    private StorageReference spaceRef;
-
-    private String file_name;
 
     private MainActivity main;
 
@@ -114,6 +109,8 @@ public class ReviewFragment extends Fragment implements DataInterface {
                     ReviewVo reviewVo = snapshot.getValue(ReviewVo.class); // 만들어뒀던 User 객체에 데이터를 담는다.
                     reviewVo.setReview_key(snapshot.getKey());
 
+                    writeUserList.add(reviewVo.getWrite_user());
+
                     String user = reviewVo.getWrite_user().substring(0,3) + "****";
                     reviewVo.setWrite_user(user);
 
@@ -138,17 +135,22 @@ public class ReviewFragment extends Fragment implements DataInterface {
     }
 
     @Override
-    public void dataRemove(final String key) {
+    public void dataRemove(final String key, final int pos) {
         //final String review_key = key;
         Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {//Yes
                     try {
-                        databaseReference.child(CHILE_NAME_REVIEW).child(key).removeValue();
-                        // 해당 키에 대한 이미지도 다 삭제를 해야함.
-                        imgDatabaseDelete(key);
-                        dataRead();
+                        // 작성자의 아이디와 현재 로그인 한 유저의 아이디가 같은지 비교
+                        if(writeUserList.get(pos).equals(LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID))) {
+                            databaseReference.child(CHILE_NAME_REVIEW).child(key).removeValue();
+                            // 해당 키에 대한 이미지도 다 삭제를 해야함.
+                            imgDatabaseDelete(key);
+                            dataRead();
+                        } else {
+                            DialogSampleUtil.showMessageDialog(getContext(),"","작성자만 삭제할 수 있습니다.");
+                        }
                     } catch (Exception e){
                         Log.d(TAG, e.getMessage());
                     }

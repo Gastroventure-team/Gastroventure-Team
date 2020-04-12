@@ -104,7 +104,7 @@ public class BoardFragment extends Fragment implements DataInterface {
 
 
     @Override
-    public void dataRemove(final String key) {
+    public void dataRemove(final String key, final int pos) {
         Handler handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
