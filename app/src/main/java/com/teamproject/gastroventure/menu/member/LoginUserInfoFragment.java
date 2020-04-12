@@ -150,26 +150,24 @@ public class LoginUserInfoFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         int count = (int) dataSnapshot.getChildrenCount();
                         Log.d("LLLL", "카운트 :"+count);
-                        String review_count = Integer.toString(count);
-                        int review_rank = count;
 
                         //리뷰 수 표시
-                        tv_writen_review.setText("작성한 리뷰 ("+review_count+")");
+                        tv_writen_review.setText("작성한 리뷰 ("+count+")");
 
                         //이미지, 등급 표시
-                        if(review_rank==0){
+                        if(count==0){
                             tv_grade.setText("언랭크");
                             civ_rank.setImageResource(R.drawable.rank_unrank);
-                        }else if(review_rank>0 && review_rank<=5){
+                        }else if(count>0 && count<=5){
                             tv_grade.setText("브론즈");
                             civ_rank.setImageResource(R.drawable.rank_bronze);
-                        }else if(review_rank>5 && review_rank<=15){
+                        }else if(count>5 && count<=15){
                             tv_grade.setText("실버");
                             civ_rank.setImageResource(R.drawable.rank_silver);
-                        }else if(review_rank>15 && review_rank<=50){
+                        }else if(count>15 && count<=50){
                             tv_grade.setText("골드");
                             civ_rank.setImageResource(R.drawable.rank_gold);
-                        }else if(review_rank>50){
+                        }else if(count>50){
                             tv_grade.setText("VIP");
                             civ_rank.setImageResource(R.drawable.rank_vip);
                         }
