@@ -74,7 +74,7 @@ public class BoardDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_board_detail, container, false);
-
+        mainActivity = (MainActivity) getActivity();
         board_detail_content = view.findViewById(R.id.board_detail_content);
         board_detail_title = view.findViewById(R.id.board_detail_title);
         board_update_btn = view.findViewById(R.id.board_update_btn);
