@@ -51,6 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/review_detail_store_name"
                     android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
                     android:hint="@string/menu"
                     android:textSize="20dp"
                     android:textStyle="bold" />
