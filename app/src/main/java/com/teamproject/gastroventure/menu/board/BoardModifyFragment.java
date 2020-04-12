@@ -20,6 +20,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.BoardVo;
 
 import java.text.SimpleDateFormat;
@@ -105,6 +107,8 @@ public class BoardModifyFragment extends Fragment {
                 } else {
                     boardVo.setBoard_num(1);
                 }
+                String user_id = LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID);
+                boardVo.setWrite_user(user_id);
                 boardVo.setBoard_title(title);
                 boardVo.setBoard_content(content);
                 boardVo.setBoard_date(date);
@@ -133,7 +137,11 @@ public class BoardModifyFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     BoardVo boardVo = snapshot.getValue(BoardVo.class);
+                    boardVo.setBoard_key(dataSnapshot.getKey());
                     board_num_int = boardVo.getBoard_num();
+
+                    board_modify_title.setText(boardVo.getBoard_title());
+                    board_modify_content.setText(boardVo.getBoard_content());
                 }
             }
             //DB를 가져오던중 에러 발생할경우
