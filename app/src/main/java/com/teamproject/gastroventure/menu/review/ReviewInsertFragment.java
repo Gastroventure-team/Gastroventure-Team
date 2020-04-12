@@ -319,6 +319,7 @@ public class ReviewInsertFragment extends Fragment implements DataImgInterface {
             public void onFailure(@NonNull Exception exception) {
                 Log.d(TAG, "사진에러 : " + exception.getMessage());
                 Toast.makeText(getContext(), "업로드에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                DialogSampleUtil.hideProgress();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
