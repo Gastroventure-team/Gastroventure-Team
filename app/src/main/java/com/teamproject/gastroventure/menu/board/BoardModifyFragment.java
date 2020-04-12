@@ -136,6 +136,7 @@ public class BoardModifyFragment extends Fragment {
             //FireBase Database의 데이터를 받아오는곳
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+
                     BoardVo boardVo = dataSnapshot.getValue(BoardVo.class);
                     boardVo.setBoard_key(dataSnapshot.getKey());
                     board_num_int = boardVo.getBoard_num();
