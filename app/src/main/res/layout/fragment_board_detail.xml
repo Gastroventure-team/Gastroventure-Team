@@ -3,13 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="10">
+    >
 
     <TextView
         android:id="@+id/board_detail_title"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:background="@drawable/rectangle"
         android:hint="제목"
         android:padding="10dp"
@@ -45,7 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="취소하기" />
+            android:text="뒤로가기" />
     </LinearLayout>
 
 </LinearLayout>

@@ -239,32 +239,6 @@ public class SearchFragment extends Fragment {
 
         }
     }
-/*
-
-    public void onClick(View view) {
-        int evt_id = view.getId();
-        if (evt_id == R.id.bt_prev) {
-            page--;
-            if (page < 1) {
-                page = 1;
-                DialogSampleUtil.showMessageDialog(getContext(), "", "첫번째 페이지 입니다");
-                return;
-            }
-            search();
-
-        } else if (evt_id == R.id.bt_next) {
-            page++;
-
-            if (page > total_page) {
-                page = total_page;
-                DialogSampleUtil.showMessageDialog(getContext(), "", "마지막 페이지 입니다");
-                return;
-            }
-
-            search();
-        }
-    }
-*/
 
     class LocalItemAdapter extends BaseAdapter {
         @Override
