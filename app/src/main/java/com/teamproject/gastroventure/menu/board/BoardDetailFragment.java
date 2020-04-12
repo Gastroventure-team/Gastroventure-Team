@@ -20,6 +20,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
+import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.BoardVo;
 
 
@@ -83,9 +86,13 @@ public class BoardDetailFragment extends Fragment {
         board_update_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.main_frame, BoardModifyFragment.newInstance(select_key)).commit();
+                if(user_id.equals(LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID))) {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    ft.replace(R.id.main_frame, BoardModifyFragment.newInstance(select_key)).commit();
+                }else {
+                    DialogSampleUtil.showMessageDialog(getContext(), "", "작성자만 수정 가능합니다.");
+                }
             }
         });
         detail_cancle_btn.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +117,7 @@ public class BoardDetailFragment extends Fragment {
 
                     board_detail_title.setText(boardVo.getBoard_title());
                     board_detail_content.setText(boardVo.getBoard_content());
-                    //user_id = boardVo.getWrite_user();
+                    user_id = boardVo.getWrite_user();
 
             }
             //DB를 가져오던중 에러 발생할경우
