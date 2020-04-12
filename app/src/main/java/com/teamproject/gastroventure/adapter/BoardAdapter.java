@@ -41,6 +41,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
 
     @Override
     public void onBindViewHolder(@NonNull BoardViewHolder holder, final int position) {
+        holder.write_user.setText(arrayList.get(position).getWrite_user());
         holder.board_num.setText(String.valueOf(holder.getAdapterPosition()+1));
         holder.board_title.setText(arrayList.get(position).getBoard_title());
         holder.board_date.setText(arrayList.get(position).getBoard_date());
@@ -53,6 +54,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
     }
 
     public class BoardViewHolder extends RecyclerView.ViewHolder {
+        TextView write_user;
         TextView board_num;
         TextView board_title;
         TextView board_date;
@@ -60,6 +62,7 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
 
         public BoardViewHolder(@NonNull final View itemView) {
             super(itemView);
+            this.write_user = itemView.findViewById(R.id.write_uesr);
             this.board_num = itemView.findViewById(R.id.board_num);
             this.board_title = itemView.findViewById(R.id.board_title);
             this.board_date = itemView.findViewById(R.id.board_date);

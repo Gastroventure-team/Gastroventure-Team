@@ -4,11 +4,20 @@ package com.teamproject.gastroventure.vo;
  * Created by 82108 on 2020-03-12.
  */
 public class BoardVo {
-    int board_num;
-    String board_title;
-    String board_date;
-    String board_content;
-    String board_key;
+    public int board_num;
+    public String board_title;
+    public String board_date;
+    public String board_content;
+    public String board_key;
+    public String write_user;
+
+    public String getWrite_user() {
+        return write_user;
+    }
+
+    public void setWrite_user(String write_user) {
+        this.write_user = write_user;
+    }
 
     public BoardVo(){}
 

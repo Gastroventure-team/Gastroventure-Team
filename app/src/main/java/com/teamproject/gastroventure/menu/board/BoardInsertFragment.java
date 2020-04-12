@@ -19,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.BoardVo;
 
 import java.text.SimpleDateFormat;
@@ -93,6 +95,7 @@ public class BoardInsertFragment extends Fragment {
             public void onClick(View v) {
                 String title = board_insert_title.getText().toString();
                 String content = board_insert_content.getText().toString();
+
                 Date c = Calendar.getInstance().getTime();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일");
                 String date = df.format(c);
@@ -113,10 +116,11 @@ public class BoardInsertFragment extends Fragment {
                 } else {
                     boardVo.setBoard_num(1);
                 }
-
+                String user_id = LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID);
                 boardVo.setBoard_title(title);
                 boardVo.setBoard_content(content);
                 boardVo.setBoard_date(date);
+                boardVo.setWrite_user(user_id);
 
 
                 databaseReference.child("Board").push().setValue(boardVo);

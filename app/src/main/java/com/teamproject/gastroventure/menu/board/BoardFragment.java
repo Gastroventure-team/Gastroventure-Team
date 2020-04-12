@@ -26,7 +26,9 @@ import com.teamproject.gastroventure.MainActivity;
 import com.teamproject.gastroventure.R;
 import com.teamproject.gastroventure.adapter.BoardAdapter;
 import com.teamproject.gastroventure.datainterface.DataInterface;
+import com.teamproject.gastroventure.menu.member.MemberLoginFormFragment;
 import com.teamproject.gastroventure.util.DialogSampleUtil;
+import com.teamproject.gastroventure.util.LoginSharedPreference;
 import com.teamproject.gastroventure.vo.BoardVo;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class BoardFragment extends Fragment implements DataInterface {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<BoardVo> arrayList;
+    private ArrayList<String> writeUserList = new ArrayList<String>();
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     FloatingActionButton board_fab;
@@ -65,7 +68,11 @@ public class BoardFragment extends Fragment implements DataInterface {
         board_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.replaceFragment(new BoardInsertFragment());
+                if(LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.USER_KEY).isEmpty()){
+                    DialogSampleUtil.showMessageDialog(getContext(), "", "로그인을 해야 게시판 작성이 가능합니다.\n로그인 해 주시기 바랍니다.");
+                }else {
+                    mainActivity.replaceFragment(new BoardInsertFragment());
+                }
             }
         });
 
@@ -85,7 +92,10 @@ public class BoardFragment extends Fragment implements DataInterface {
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     BoardVo boardVo = snapshot.getValue(BoardVo.class);
                     boardVo.setBoard_key(snapshot.getKey());
-                    // 넘버를 받아서 제일 큰거 + 1 --> 다음 게시글의 넘버로 세팅
+
+                    String writer = boardVo.getWrite_user().substring(0,3) + "****";
+                    boardVo.setWrite_user(writer);
+
                     arrayList.add(boardVo);//담은 데이터들을 배열리스트에 추가하고 리사이클러뷰로 보낼준비
                 }
                 Log.d("1212121", "사이즈는 !! " + arrayList.size());
@@ -110,10 +120,13 @@ public class BoardFragment extends Fragment implements DataInterface {
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {//Yes
                     try {
-                        Log.d("키 맞다고!!!!", key);
-                        databaseReference.child("Board").child(key).removeValue();
-
-                        dataRead();
+                        if(writeUserList.get(pos).equals(LoginSharedPreference.getAttribute(getContext(), MemberLoginFormFragment.LOGIN_ID))) {
+                            Log.d("키 맞다고!!!!", key);
+                            databaseReference.child("Board").child(key).removeValue();
+                            dataRead();
+                        }else{
+                            DialogSampleUtil.showMessageDialog(getContext(),"","작성자만 삭제할 수 있습니다.");
+                        }
                         //reviewAdapter.notifyDataSetChanged();
                     } catch (Exception e){
                         Log.d(TAG, e.getMessage());
