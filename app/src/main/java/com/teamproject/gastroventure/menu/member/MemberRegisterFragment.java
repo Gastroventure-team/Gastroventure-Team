@@ -209,8 +209,10 @@ public class MemberRegisterFragment extends Fragment {
                 userInfo.setTel(tel);
 
                 Log.d(TAG, "정보확인 :" + id + "/" + pwd + "/" + name + "/" + nickname + "/" + tel);
+                String user_key = db_ref.push().getKey();
+                userInfo.setUser_key(user_key);
 
-                db_ref.child("Member").push().setValue(userInfo);
+                db_ref.child("Member").child(user_key).setValue(userInfo);
 
                 Log.d(TAG, "member 테이블에 입력 끝");
                 Toast.makeText(getContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();

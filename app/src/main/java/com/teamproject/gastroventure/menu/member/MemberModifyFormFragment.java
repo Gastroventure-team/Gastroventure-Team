@@ -53,7 +53,7 @@ public class MemberModifyFormFragment extends Fragment {
 
     LoginUserInfoFragment login_user_info_Frag;
 
-    String pwd,pwd_check,name,nickname,tel;
+    String id,pwd,pwd_check,name,nickname,tel;
 
     private ArrayList<UserInfo> memberInfo = new ArrayList<UserInfo>();
 
@@ -75,6 +75,7 @@ public class MemberModifyFormFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             user_key = getArguments().getString(USER_KEY);
+            Log.d("dasda","수정폼 유저키 : " + user_key);
         }
     }
 
@@ -108,8 +109,8 @@ public class MemberModifyFormFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 UserInfo vo = dataSnapshot.getValue(UserInfo.class);
-
-                et_id_email.setText(vo.getId());
+                id = vo.getId();
+                et_id_email.setText(id);
                 et_name.setText(vo.getName());
                 et_nickname.setText(vo.getNickname());
                 et_tel.setText(vo.getTel());
@@ -176,10 +177,12 @@ public class MemberModifyFormFragment extends Fragment {
                     }
 
                     //DB에 정보 업데이트
+                    vo.setId(id);
                     vo.setPwd(pwd);
                     vo.setName(name);
                     vo.setNickname(nickname);
                     vo.setTel(tel);
+                    vo.setUser_key(user_key);
 
                     db_ref.child("Member").child(user_key).setValue(vo);
                     Log.d(TAG, "멤버 테이블에 수정");
