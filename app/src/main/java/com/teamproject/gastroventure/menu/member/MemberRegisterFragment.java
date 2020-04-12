@@ -168,8 +168,13 @@ public class MemberRegisterFragment extends Fragment {
                 }
 
                 if(isValidEmail(id) == false){
-                    Toast.makeText(getContext(), "이메일 형식의 아이디를 입력해주세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "유효하지 않은 Email형식의 ID입니다.", Toast.LENGTH_SHORT).show();
                     et_id.requestFocus();
+                    return;
+                }
+                if(isValidtel(tel) ==false){
+                    Toast.makeText(getContext(), "유효하지 않은 형식의 전화번호입니다.", Toast.LENGTH_SHORT).show();
+                    et_tel.requestFocus();
                     return;
                 }
 
@@ -259,14 +264,19 @@ public class MemberRegisterFragment extends Fragment {
         });
     }
 
-    //ID - email형식 확인 (정규식)
+    //ID - email 유효성 정규식
     public static boolean isValidEmail(String email) {
-        boolean err = false; String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+        boolean err = false;
+        String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(email);
         if(m.matches()) {
             err = true;
         }
         return err;
+    }
+    //전화번호 유효성 정규식
+    public boolean isValidtel(String tel){
+        return tel.matches("(01[016789])(\\d{3,4})(\\d{4})");
     }
 }

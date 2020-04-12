@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -164,6 +165,12 @@ public class MemberModifyFormFragment extends Fragment {
                     return;
                 }
 
+                if(isValidtel(tel)==false){
+                    Toast.makeText(getContext(),"유효하지 않은 형식의 전화번호입니다.",Toast.LENGTH_SHORT).show();
+                    et_tel.requestFocus();
+                    return;
+                }
+
                 Log.d(TAG, "디비조회");
 
                 boolean checkB =false;
@@ -234,5 +241,10 @@ public class MemberModifyFormFragment extends Fragment {
 
             }
         });
+    }
+
+    //전화번호 유효성 정규식
+    public boolean isValidtel(String tel){
+        return tel.matches("(01[016789])(\\d{3,4})(\\d{4})");
     }
 }
